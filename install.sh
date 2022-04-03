@@ -118,6 +118,7 @@ echo "=============================================================="
 echo "选择版本"
 echo "1.原版"
 echo "2.魔改版"
+echo "0.退出"
 echo "=============================================================="
 	read -r -p "请选择:" installx-ui
 	if [[ "${installx-ui}" == "1" ]]; then
@@ -130,6 +131,7 @@ echo "=============================================================="
                 sudo chmod 755 /usr/local/x-ui/bin/xray-linux-amd64
                 systemctl restart x-ui
 	else	
+	  [[ "${installx-ui}" == "3" ]]; then
 	  start_menu
 	fi
 start_menu
