@@ -114,26 +114,11 @@ start_menu
 
 #安装x-ui
 x-ui() {
-echo "=============================================================="
-echo "选择版本"
-echo "1.原版"
-echo "2.魔改版"
-echo "0.退出"
-echo "=============================================================="
-	read -r -p "请选择:" installx-ui
-	if [[ "${installx-ui}" == "1" ]]; then
-		bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh) 
-	else
-	  [[ "${installx-ui}" == "2" ]]; 
-		bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
-                rm -f /usr/local/x-ui/bin/xray-linux-amd64
-                wget --no-check-certificate -O /usr/local/x-ui/bin/xray-linux-amd64 "https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/xray-linux-amd64"
-                sudo chmod 755 /usr/local/x-ui/bin/xray-linux-amd64
-                systemctl restart x-ui
-	else	
-	  [[ "${installx-ui}" == "3" ]]; 
-	  start_menu
-	fi
+bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+rm -f /usr/local/x-ui/bin/xray-linux-amd64
+wget --no-check-certificate -O /usr/local/x-ui/bin/xray-linux-amd64 "https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/xray-linux-amd64"
+sudo chmod 755 /usr/local/x-ui/bin/xray-linux-amd64
+systemctl restart x-ui
 start_menu
 }
 
