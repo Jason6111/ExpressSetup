@@ -74,19 +74,21 @@ systemctl start nginx.service
 systemctl enable nginx.service
 start_menu
 }
+
 #安装哪吒面板
 nezhamianban() {
 curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh
 sudo ./nezha.sh
 start_menu
 }
+
 #转发救机
 zhuanfa() {
-	echoContent "\n=============================================================="
-	echoContent "选择机器"
-	echoContent "1.国外机"
-	echoContent "2.国内机"
-	echoContent red "=============================================================="
+echo "\n=============================================================="
+echo "选择机器"
+echo "1.国外机"
+echo "2.国内机"
+echo "=============================================================="
 	read -r -p "请选择:" installzhuanfa
 	if [[ "${installzhuanfa}" == "1" ]]; then
 		wget --no-check-certificate -qO natcfg.sh https://raw.githubusercontent.com/arloor/iptablesUtils/master/natcfg.sh && bash natcfg.sh 
