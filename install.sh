@@ -5,7 +5,7 @@ export PATH
 #开始菜单
 start_menu() {
   clear
-  echo && echo -e " 809 一键安装管理脚本
+  echo && echo -e " 一键安装管理脚本
 ————————————————————————————————————————————————————————————————  
  1.同步上海时间
  2.关闭ubuntu防火墙
@@ -16,6 +16,7 @@ start_menu() {
  7.转发救机
  8.安装bbr
  9.一键Xray
+ 10.安装哪吒探针
  0.退出
 ————————————————————————————————————————————————————————————————" &&
 
@@ -49,6 +50,10 @@ start_menu() {
   9)
     xrayInstall
     ;;    
+  10)
+    nezhaianban
+    ;;   
+  
   0)
     exit 1
     ;;
@@ -69,7 +74,12 @@ systemctl start nginx.service
 systemctl enable nginx.service
 start_menu
 }
-
+#安装哪吒面板
+nezhamianban() {
+curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh
+sudo ./nezha.sh
+start_menu
+}
 #转发救机
 zhuanfa() {
 	echoContent "\n=============================================================="
@@ -104,7 +114,7 @@ start_menu
 x-ui() {
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 rm -f /usr/local/x-ui/bin/xray-linux-amd64
-wget --no-check-certificate -O /usr/local/x-ui/bin/xray-linux-amd64 "https://cdn.jsdelivr.net/gh/Jason6111/809@main/xray-linux-amd64"
+wget --no-check-certificate -O /usr/local/x-ui/bin/xray-linux-amd64 "https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/xray-linux-amd64"
 sudo chmod 755 /usr/local/x-ui/bin/xray-linux-amd64
 systemctl restart x-ui
 start_menu
