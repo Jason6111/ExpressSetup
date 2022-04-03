@@ -12,11 +12,12 @@ start_menu() {
  3.关闭centos防火墙
  4.安装nginx有宝塔的不用安装
  5.ssl证书(请先确保端口打开)
- 6.安装x-ui并替换文件
- 7.转发救机
- 8.安装bbr
- 9.一键Xray
- 10.安装哪吒探针
+ 6.安装x-ui
+ 7.安装x-ui并替换文件
+ 8.转发救机
+ 9.安装bbr
+ 10.一键Xray
+ 11.安装哪吒探针
  0.退出
 ————————————————————————————————————————————————————————————————" &&
 
@@ -42,15 +43,18 @@ start_menu() {
     x-ui
     ;;
   7)
-    zhuanfa
+    x-uimogai
     ;;
   8)
-    bbrInstall
+    zhuanfa
     ;;
   9)
+    bbrInstall
+    ;;
+  10)
     xrayInstall
     ;;    
-  10)
+  11)
     nezhaianban
     ;;   
   
@@ -113,12 +117,17 @@ start_menu
 }
 
 #安装x-ui
-x-ui() {
+x-uimogai() {
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 rm -f /usr/local/x-ui/bin/xray-linux-amd64
 wget --no-check-certificate -O /usr/local/x-ui/bin/xray-linux-amd64 "https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/xray-linux-amd64"
 sudo chmod 755 /usr/local/x-ui/bin/xray-linux-amd64
 systemctl restart x-ui
+start_menu
+}
+#安装x-ui
+x-ui() {
+bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 start_menu
 }
 
