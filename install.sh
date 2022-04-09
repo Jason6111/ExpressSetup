@@ -108,7 +108,7 @@ apt update -y || yum update -y
 apt install -y curl || yum install -y curl
 apt install -y socat || yum install -y socat
 curl https://get.acme.sh | sh
-read -p "请输入E-mial: " email
+read -p "请输入E-mail: " email
 read -p "请输入域名: " domain
 ~/.acme.sh/acme.sh --register-account -m $email
 ~/.acme.sh/acme.sh  --issue -d $domain   --standalone
