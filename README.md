@@ -7,6 +7,10 @@ bash <(curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/install.s
 ```
 bash <(curl -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install.sh)
 ```  
+一键hysteria
+```
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh/main/hysteria.sh && bash hysteria.sh
+```
 
 ## 哪吒探针配置
 git认证
