@@ -9,7 +9,7 @@ bash <(curl -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ins
 ```  
 一键hysteria
 ```
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh/main/hysteria.sh && bash hysteria.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh && bash hysteria.sh
 ```
 
 ## 哪吒探针配置
