@@ -522,7 +522,7 @@ changepswd(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-oldpswd=`cat /etc/hysteria/config.json 2>/dev/null | grep -w password | grep -a 2 | awk '{print $2}' | awk -F '"' '{ print $2}'`
+oldpswd=`cat /etc/hysteria/config.json 2>/dev/null | grep -w password | awk '{print $2}' | awk -F '"' '{ print $2}' | sed -n 2p`
 echo
 blue "当前正在使用的验证密码：$oldpswd"
 echo
