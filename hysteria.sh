@@ -1,6 +1,7 @@
 #!/bin/bash
 hyygV="22.8.29 V 3.3"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
+chmod +x /root/hysteria.sh
 red='\033[0;31m'
 bblue='\033[0;34m'
 plain='\033[0m'
@@ -353,7 +354,6 @@ uphyyg(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-rm -rf /root/hysteria.sh /usr/bin/hy
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh
 chmod +x /root/hysteria.sh 
 ln -sf /root/hysteria.sh /usr/bin/hy
