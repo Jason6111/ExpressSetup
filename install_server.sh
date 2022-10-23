@@ -97,6 +97,9 @@ identify_the_operating_system_and_architecture() {
       'armv8' | 'aarch64')
         MACHINE='arm64'
         ;;
+      's390x')
+        MACHINE='s390x'
+        ;;
       'mips' | 'mipsle' | 'mips64' | 'mips64le')
         MACHINE='mipsle'
         ;;
