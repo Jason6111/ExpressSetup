@@ -43,6 +43,7 @@ bit=`uname -m`
 [[ $bit = x86_64 ]] && cpu=AMD64
 [[ $bit = aarch64 ]] && cpu=ARM64
 vi=`systemd-detect-virt`
+rm -rf /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 wgcfgo(){
@@ -58,6 +59,13 @@ fi
 }
 
 start(){
+if [[ -n $(sysctl net.ipv4.tcp_congestion_control 2>/dev/null | awk -F ' ' '{print $3}') ]]; then
+bbr=`sysctl net.ipv4.tcp_congestion_control | awk -F ' ' '{print $3}'`
+elif [[ -n $(ping 10.0.0.2 -c 2 | grep ttl) ]]; then
+bbr="openvz版bbr-plus"
+else
+bbr="暂不支持显示"
+fi
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
@@ -362,6 +370,12 @@ green "安装脚本升级成功"
 
 cfwarp(){
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/CFwarp.sh && bash CFwarp.sh
+
+}
+
+bbr(){
+bash <(curl -L -s https://raw.githubusercontent.com/teddysun/across/master/bbr.sh)
+
 }
 
 changepr(){
@@ -502,20 +516,22 @@ red "未正常安装hysteria!" && exit
 fi
 ipv6=$(curl -s6m5 https://ip.gs -k) 
 ipv4=$(curl -s4m5 https://ip.gs -k)
-green "切换IPV4/IPV6出站优先级选择如下:"
-readp "1. IPV4优先\n2. IPV6优先\n请选择：" rrpip
-if [[ $rrpip == "1" && -n $ipv4 ]];then
-rrpip="46"
-elif [[ $rrpip == "2" && -n $ipv6 ]];then
-rrpip="64"
-else 
-red "无IPV4/IPV6优先选择项或者输入错误" && changeip
-fi
+chip(){
 rpip=`cat /etc/hysteria/config.json 2>/dev/null | grep resolve_preference | awk '{print $2}' | awk -F '"' '{ print $2}'`
 sed -i "4s/$rpip/$rrpip/g" /etc/hysteria/config.json
 systemctl restart hysteria-server
 [[ $rrpip = 46 ]] && v4v6="IPV4优先：$(curl -s4 https://ip.gs -k)" || v4v6="IPV6优先：$(curl -s6 https://ip.gs -k)"
 blue "确定当前已更换的IP优先级：${v4v6}\n"
+}
+green "切换IPV4/IPV6出站优先级选择如下:"
+readp "1. IPV4优先\n2. IPV6优先\n请选择：" rrpip
+if [[ $rrpip == "1" && -n $ipv4 ]];then
+rrpip="46" && chip
+elif [[ $rrpip == "2" && -n $ipv6 ]];then
+rrpip="64" && chip
+else 
+red "无IPV4/IPV6优先选择项或者输入错误" && changeip
+fi
 }
 
 changepswd(){
@@ -658,6 +674,7 @@ green " 6. 更新hysteria内核"
 white "----------------------------------------------------------------------------------"
 green " 7. 显示hysteria分享链接、V2rayN配置文件、二维码（变更配置后可再次选择输出新的配置信息）"
 green " 8. 安装warp（可选）"
+green " 9. 安装BBR+FQ加速（可选）"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
@@ -677,7 +694,7 @@ yellow "检测到最新hysteria内核版本号：${hyVERSION} ，可选择6进�
 fi
 fi
 white "VPS系统信息如下："
-white "操作系统:     $(blue "$op")" && white "内核版本:     $(blue "$version")" && white "CPU架构 :     $(blue "$cpu")" && white "虚拟化类型:   $(blue "$vi")"
+white "操作系统:     $(blue "$op")" && white "内核版本:     $(blue "$version")" && white "CPU架构 :     $(blue "$cpu")" && white "虚拟化类型:   $(blue "$vi")" && white "TCP算法:      $(blue "$bbr")"
 white "$status"
 echo
 readp "请输入数字:" Input
@@ -690,6 +707,7 @@ case "$Input" in
  6 ) uphysteriacore;;
  7 ) hysteriashare;;
  8 ) cfwarp;;
+ 9 ) bbr;;
  * ) exit 
 esac
 }
