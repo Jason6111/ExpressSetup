@@ -11,6 +11,10 @@ bash <(curl -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ins
 ```
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh && bash hysteria.sh
 ```
+一键TG
+```  
+bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
+```
 
 ## 哪吒探针配置
 git认证
