@@ -40,8 +40,9 @@ version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
 bit=`uname -m`
-[[ $bit = x86_64 ]] && cpu=AMD64
-[[ $bit = aarch64 ]] && cpu=ARM64
+[[ $bit = x86_64 ]] && cpu=amd64
+[[ $bit = aarch64 ]] && cpu=arm64
+[[ $bit = s390x ]] && cpu=s390x
 vi=`systemd-detect-virt`
 rm -rf /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -174,7 +175,7 @@ rm -rf /root/cert.crt /root/private.key
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
 ym=$(cat /etc/hysteria/ca.log)
 if [[ ! -f /root/cert.crt && ! -f /root/private.key ]] && [[ ! -s /root/cert.crt && ! -s /root/private.key ]]; then
-red "域名申请失败，脚本退出" && exit
+red "证书申请失败，脚本退出" && exit
 fi
 fi
 else
@@ -589,7 +590,7 @@ fi
 }
 
 inshysteria(){
-start ; inshy ; inscertificate ; inspr ; insport ; inspswd
+inshy ; inscertificate ; inspr ; insport ; inspswd
 if [[ ! $vi =~ lxc|openvz ]]; then
 sysctl -w net.core.rmem_max=8000000
 sysctl -p
@@ -625,7 +626,7 @@ blue "v2rayn客户端配置文件v2rayn.json及代理规则文件保存到 /root
 yellow "$(cat /root/HY/acl/v2rayn.json)\n"
 blue "分享链接保存到 /root/HY/URL.txt"
 yellow "${url}\n"
-green "二维码分享链接如下"
+green "二维码分享链接如下(SagerNet / Matsuri / 小火箭)"
 qrencode -o - -t ANSIUTF8 "$(cat /root/HY/URL.txt)"
 else
 red "hysteria代理服务安装失败，请运行 systemctl status hysteria-server 查看服务日志" && exit
@@ -654,9 +655,9 @@ red "未正常安装hysteria!" && exit
 fi
 green "当前v2rayn客户端配置文件v2rayn.json内容如下，保存到 /root/HY/acl/v2rayn.json\n"
 yellow "$(cat /root/HY/acl/v2rayn.json)\n"
-green "当前hysteria节点分享链接如下，保存到 /root/HY/URL.txt："
+green "当前hysteria节点分享链接如下，保存到 /root/HY/URL.txt"
 yellow "$(cat /root/HY/URL.txt)\n"
-green "当前hysteria节点二维码分享链接如下"
+green "当前hysteria节点二维码分享链接如下(SagerNet / Matsuri / 小火箭)"
 qrencode -o - -t ANSIUTF8 "$(cat /root/HY/URL.txt)"
 }
 
