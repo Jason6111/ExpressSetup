@@ -248,7 +248,7 @@ fi
 blue "已确认端口：$port\n"
 }
 inswym(){
-readp "设置伪装域名（回车跳过为随机6位字符）：" wym
+readp "设置伪装域名（回车默认）：" wym
 if [[ -z ${wym} ]]; then
 user=`www.xxxxx520.com`
 fi
