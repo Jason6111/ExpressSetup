@@ -250,9 +250,9 @@ blue "已确认端口：$port\n"
 inswym(){
 readp "设置伪装域名（回车默认）：" wym
 if [[ -z ${wym} ]]; then
-user=`www.xxxxx520.com`
+wym=`www.xxxxx520.com`
 fi
-blue "已确认用户名：${wym}\n"
+blue "已确认伪装域名：${wym}\n"
 }
 insuser(){
 readp "设置naiveproxy用户名（回车跳过为随机6位字符）：" user
