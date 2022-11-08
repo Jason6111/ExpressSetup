@@ -1,6 +1,6 @@
 #!/bin/bash
 naygV="22.11.7 V 1.6"
-remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/naiveproxy.sh | sed  -n 2p | cut -d '"' -f 2`
+remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/naiveproxy.sh
 red='\033[0;31m'
 yellow='\033[0;33m'
@@ -151,14 +151,14 @@ mv caddy /usr/bin/
 }
 
 inscaddynaive(){
-naygvsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/version"`
+naygvsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version"`
 green "请选择安装或者更新 naiveproxy 内核方式:"
 readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前脚本已更新到最新版本号： $naygvsion （快速安装，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
 if [ -z "$chcaddynaive" ] || [ $chcaddynaive == "1" ]; then
 insupdate
 cd /root
-wget -N --no-check-certificate https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/caddy2-naive-linux-${cpu}.tar.gz
-wget -qN --no-check-certificate https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/version
+wget -N --no-check-certificate https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/caddy2-naive-linux-${cpu}.tar.gz
+wget -qN --no-check-certificate https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version
 tar zxvf caddy2-naive-linux-${cpu}.tar.gz
 rm caddy2-naive-linux-${cpu}.tar.gz -f
 cd
@@ -458,7 +458,7 @@ upnayg(){
 if [[ -z $(systemctl status caddy 2>/dev/null | grep -w active) && ! -f '/etc/caddy/Caddyfile' ]]; then
 red "未正常安装naiveproxy" && exit
 fi
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/naiveproxy.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh
 chmod +x /root/naiveproxy.sh 
 ln -sf /root/naiveproxy.sh /usr/bin/na
 green "naiveproxy安装脚本升级成功" && na
