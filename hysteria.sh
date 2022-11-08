@@ -1,5 +1,5 @@
 #!/bin/bash
-hyygV="22.8.29 V 3.3"
+hyygV="22.10.27 V 4.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
@@ -154,7 +154,7 @@ rm -rf install_server.sh
 
 inscertificate(){
 green "hysteria协议证书申请方式选择如下:"
-readp "1. www.bing.com自签证书（回车默认）\n2. acme一键申请证书（支持常规80端口模式与dns api模式）\n请选择：" certificate
+readp "1. www.bing.com自签证书（回车默认）\n2. acme一键申请证书（支持常规80端口模式与dns api模式）或已放置在/root/ca目录的自定义证书\n请选择：" certificate
 if [ -z "${certificate}" ] || [ $certificate == "1" ]; then
 openssl ecparam -genkey -name prime256v1 -out /etc/hysteria/private.key
 openssl req -new -x509 -days 36500 -key /etc/hysteria/private.key -out /etc/hysteria/cert.crt -subj "/CN=www.bing.com"
@@ -163,30 +163,35 @@ certificatep='/etc/hysteria/private.key'
 certificatec='/etc/hysteria/cert.crt'
 blue "已确认证书模式: www.bing.com自签证书\n"
 elif [ $certificate == "2" ]; then
-if [[ -f /root/cert.crt && -f /root/private.key ]] && [[ -s /root/cert.crt && -s /root/private.key ]]; then
-blue "经检测，之前已申请过acme证书"
-readp "1. 直接使用原来的证书，默认root路径，可支持自定义上传证书（回车默认）\n2. 删除原来的证书，重新申请acme证书\n请选择：" certacme
+iif [[ -f /root/ca/cert.crt && -f /root/ca/private.key ]] && [[ -s /root/ca/cert.crt && -s /root/ca/private.key ]]; then
+blue "经检测，root/ca目录下有证书文件（cert.crt与private.key）"
+readp "1. 直接使用root/ca目录下申请过证书（回车默认）\n2. 删除原来的证书，重新申请acme证书\n请选择：" certacme
 if [ -z "${certacme}" ] || [ $certacme == "1" ]; then
-readp "请输入已申请过的acme证书域名:" ym
-echo ${ym} > /etc/hysteria/ca.log
+if [[ -f /root/ca/ca.log ]]; then
+ym=$(cat /root/ca/ca.log)
+blue "检测到的域名：$ym ，已直接引用\n"
+else
+green "无本acme脚本申请证书记录，当前为自定义证书模式"
+readp "请输入已解析完成的域名:" ym
 blue "输入的域名：$ym，已直接引用\n"
+fi
 elif [ $certacme == "2" ]; then
-rm -rf /root/cert.crt /root/private.key
+rm -rf /root/ca
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
-ym=$(cat /etc/hysteria/ca.log)
-if [[ ! -f /root/cert.crt && ! -f /root/private.key ]] && [[ ! -s /root/cert.crt && ! -s /root/private.key ]]; then
+ym=$(cat /root/ca/ca.log 2>/dev/null)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
 red "证书申请失败，脚本退出" && exit
 fi
 fi
 else
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
-ym=$(cat /etc/hysteria/ca.log)
-if [[ ! -f /root/cert.crt && ! -f /root/private.key ]] && [[ ! -s /root/cert.crt && ! -s /root/private.key ]]; then
+ym=$(cat /root/ca/ca.log 2>/dev/null)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
 red "域名申请失败，脚本退出" && exit
 fi
 fi
-certificatep='/root/private.key'
-certificatec='/root/cert.crt'
+certificatep='/root/ca/private.key'
+certificatec='/root/ca/cert.crt'
 else 
 red "输入错误，请重新选择" && inscertificate
 fi
@@ -279,7 +284,7 @@ fi
 if [[ $ym = www.bing.com ]]; then
 ins=true
 else
-ym=$(cat /etc/hysteria/ca.log)
+ym=$(cat /etc/ca/ca.log)
 ymip=$ym;ins=false
 fi
 
@@ -371,12 +376,14 @@ green "安装脚本升级成功"
 
 cfwarp(){
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/CFwarp.sh && bash CFwarp.sh
-
 }
 
 bbr(){
 bash <(curl -L -s https://raw.githubusercontent.com/teddysun/across/master/bbr.sh)
+}
 
+acme(){
+bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh)
 }
 
 changepr(){
@@ -414,8 +421,8 @@ else
 oldserver=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| cut -d ':' -f 1`
 fi
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
-ym=$(cat /etc/hysteria/ca.log)
-ymip=$(cat /etc/hysteria/ca.log)
+ym=$(cat /etc/ca/ca.log)
+ymip=$(cat /etc/ca/ca.log)
 else
 ym=www.bing.com
 ymip=$ip
@@ -428,34 +435,39 @@ certificate=`cat /etc/hysteria/config.json 2>/dev/null | grep cert | awk '{print
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
 certificatepp='/etc/hysteria/private.key'
 certificatecc='/etc/hysteria/cert.crt'
-blue "当前正在使用的证书：bing自签证书，可更换为acme申请的证书"
+blue "当前正在使用的证书：bing自签证书，可更换为acme申请证书或已上传root/ca目录的自定义证书"
 echo
 readp "是否切换？（回车为是。其他选择为否，并返回主菜单）\n请选择：" choose
 if [ -z "${choose}" ]; then
-if [[ -f /root/cert.crt && -f /root/private.key ]] && [[ -s /root/cert.crt && -s /root/private.key ]]; then
-blue "经检测，之前已申请过acme证书"
-readp "1. 直接使用原来的证书，默认root路径，可支持自定义上传证书（回车默认）\n2. 删除原来的证书，重新申请acme证书\n请选择：" certacme
+if [[ -f /root/ca/cert.crt && -f /root/ca/private.key ]] && [[ -s /root/ca/cert.crt && -s /root/ca/private.key ]]; then
+blue "经检测，root/ca目录下有证书文件（cert.crt与private.key）"
+readp "1. 直接使用root/ca目录下申请过证书（回车默认）\n2. 删除原来的证书，重新申请acme证书\n请选择：" certacme
 if [ -z "${certacme}" ] || [ $certacme == "1" ]; then
-readp "请输入已申请过的acme证书域名:" ym
-echo ${ym} > /etc/hysteria/ca.log
+if [[ -f /root/ca/ca.log ]]; then
+ym=$(cat /root/ca/ca.log)
+blue "检测到的域名：$ym ，已直接引用\n"
+else
+green "无本acme脚本申请证书记录，当前为自定义证书模式"
+readp "请输入已解析完成的域名:" ym
 blue "输入的域名：$ym，已直接引用\n"
+fi
 elif [ $certacme == "2" ]; then
-rm -rf /root/cert.crt /root/private.key
+rm -rf /root/ca
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
-ym=$(cat /etc/hysteria/ca.log)
-if [[ ! -f /root/cert.crt && ! -f /root/private.key ]] && [[ ! -s /root/cert.crt && ! -s /root/private.key ]]; then
-red "域名申请失败，脚本退出" && exit
+ym=$(cat /root/ca/ca.log 2>/dev/null)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
+red "证书申请失败，脚本退出" && exit
 fi
 fi
 else
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
-ym=$(cat /etc/hysteria/ca.log)
-if [[ ! -f /root/cert.crt && ! -f /root/private.key ]] && [[ ! -s /root/cert.crt && ! -s /root/private.key ]]; then
-red "域名申请失败，脚本退出" && exit
+ym=$(cat /root/ca/ca.log 2>/dev/null)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
+red "证书申请失败，脚本退出" && exit
 fi
 fi
-certificatep='/root/private.key'
-certificatec='/root/cert.crt'
+certificatep='/root/ca/private.key'
+certificatec='/root/ca/cert.crt'
 certclient
 sed -i '21s/true/false/g' /root/HY/acl/v2rayn.json
 sed -i 's/true/false/g' /root/HY/URL.txt
@@ -463,8 +475,8 @@ else
 hy
 fi
 else
-certificatepp='/root/private.key'
-certificatecc='/root/cert.crt'
+certificatepp='/root/ca/private.key'
+certificatecc='/root/ca/cert.crt'
 blue "当前正在使用的证书：acme申请的证书，可更换为bing自签证书"
 echo
 readp "是否切换？（回车为是。其他选择为否，并返回主菜单）\n请选择：" choose
@@ -491,10 +503,10 @@ sureipadress(){
 if [[ $certificate = '/etc/hysteria/cert.crt' && -n $(curl -s6m5 https://ip.gs -k) ]]; then
 sed -i "2s/\[$oldserver\]/${ymip}/g" /root/HY/acl/v2rayn.json
 sed -i "s/\[$oldserver\]/${ymip}/g" /root/HY/URL.txt
-elif [[ $certificate = '/root/cert.crt' && -n $(curl -s6m5 https://ip.gs -k) ]]; then
+elif [[ $certificate = '/root/ca/cert.crt' && -n $(curl -s6m5 https://ip.gs -k) ]]; then
 sed -i "2s/$oldserver/\[${ymip}\]/g" /root/HY/acl/v2rayn.json
 sed -i "s/$oldserver/\[${ymip}\]/" /root/HY/URL.txt
-elif [[ $certificate = '/root/cert.crt' && -z $(curl -s6m5 https://ip.gs -k) ]]; then
+elif [[ $certificate = '/root/ca/cert.crt' && -z $(curl -s6m5 https://ip.gs -k) ]]; then
 sed -i "2s/$oldserver/${ymip}/g" /root/HY/acl/v2rayn.json
 sed -i "s/$oldserver/${ymip}/" /root/HY/URL.txt
 elif [[ $certificate = '/etc/hysteria/cert.crt' && -z $(curl -s6m5 https://ip.gs -k) ]]; then
@@ -571,7 +583,7 @@ hysteriashare
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持root路径上传自定义证书)\n4. 更换验证密码\n5. 更换端口\n6. 返回上层\n请选择：" choose
+readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 更换端口\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
@@ -615,7 +627,7 @@ if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
 ip=$(curl -s6m5 https://ip.gs -k) || ip=$(curl -s4m5 https://ip.gs -k)
 [[ -n $(echo $ip | grep ":") ]] && ymip="[$ip]" || ymip=$ip
 else
-ymip=$(cat /etc/hysteria/ca.log)
+ymip=$(cat /root/ca/ca.log)
 fi
 }
 wgcfgo
@@ -668,14 +680,15 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green " 1. 安装hysteria（必选）" 
 green " 2. 卸载hysteria"
 white "----------------------------------------------------------------------------------"
-green " 3. 五种配置快速变更（IP优先级、传输协议、证书类型、验证密码、端口）"
+green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、端口）"
 green " 4. 关闭、开启、重启hysteria"   
-green " 5. 更新hysteria-yg安装脚本"  
+green " 5. 更新hysteria安装脚本"  
 green " 6. 更新hysteria内核"
 white "----------------------------------------------------------------------------------"
 green " 7. 显示hysteria分享链接、V2rayN配置文件、二维码（变更配置后可再次选择输出新的配置信息）"
-green " 8. 安装warp（可选）"
-green " 9. 安装BBR+FQ加速（可选）"
+green " 8. acme证书管理菜单"
+green " 9. 安装warp（可选）"
+green " 10. 安装BBR+FQ加速（可选）"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
@@ -707,8 +720,9 @@ case "$Input" in
  5 ) uphyyg;; 
  6 ) uphysteriacore;;
  7 ) hysteriashare;;
- 8 ) cfwarp;;
- 9 ) bbr;;
+ 8 ) acme;;
+ 9 ) cfwarp;;
+ 10 ) bbr;;
  * ) exit 
 esac
 }
