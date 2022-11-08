@@ -2,12 +2,13 @@
 red='\033[0;31m'
 bblue='\033[0;34m'
 plain='\033[0m'
+blue(){ echo -e "\033[36m\033[01m$1\033[0m";}
 red(){ echo -e "\033[31m\033[01m$1\033[0m";}
 green(){ echo -e "\033[32m\033[01m$1\033[0m";}
 yellow(){ echo -e "\033[33m\033[01m$1\033[0m";}
 white(){ echo -e "\033[37m\033[01m$1\033[0m";}
 readp(){ read -p "$(yellow "$1")" $2;}
-[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && rm -rf acme.sh && exit
+[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
 if [[ -f /etc/redhat-release ]]; then
 release="Centos"
 elif cat /etc/issue | grep -q -E -i "debian"; then
@@ -23,14 +24,13 @@ release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
 else 
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统" && rm -rf acme.sh && exit 
+red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统" && exit 
 fi
 
 v4v6(){
 v6=$(curl -s6m5 https://ip.gs -k)
 v4=$(curl -s4m5 https://ip.gs -k)
 }
-
 
 acme1(){
 [[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
@@ -83,6 +83,11 @@ Aemail=$auto@gmail.com
 fi
 yellow "当前注册的邮箱名称：$Aemail"
 green "开始安装acme.sh申请证书脚本"
+wget -N https://github.com/Neilpang/acme.sh/archive/master.tar.gz >/dev/null 2>&1
+tar -zxvf master.tar.gz >/dev/null 2>&1
+cd acme.sh-master >/dev/null 2>&1
+./acme.sh --install >/dev/null 2>&1
+cd
 curl https://get.acme.sh | sh -s email=$Aemail
 [[ -n $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && green "安装acme.sh证书申请程序成功" || red "安装acme.sh证书申请程序失败" 
 bash /root/.acme.sh/acme.sh --upgrade --use-wget --auto-upgrade
@@ -92,35 +97,50 @@ checktls(){
 fail(){
 red "遗憾，域名证书申请失败"
 yellow "建议一：更换下二级域名名称再尝试执行脚本（重要）"
-green "例：原二级域名 x.jason6111.eu.org 或 x.jason6111.cf ，在cloudflare中重命名其中的x名称，确定并生效"
+green "例：原二级域名 x.ca.eu.org 或 x.ca.cf ，在cloudflare中重命名其中的x名称，确定并生效"
 echo
-yellow "建议二：更换下当前本地网络IP环境，再尝试执行脚本"
-rm -rf acme.sh && exit
+yellow "建议二：更换下当前本地网络IP环境，再尝试执行脚本" && exit
 }
-if [[ -f /root/cert.crt && -f /root/private.key ]] && [[ -s /root/cert.crt && -s /root/private.key ]]; then
-if [[ -f '/etc/hysteria/config.json' ]]; then
-echo ${ym} > /etc/hysteria/ca.log
-fi
+if [[ -f /root/ca/cert.crt && -f /root/ca/private.key ]] && [[ -s /root/ca/cert.crt && -s /root/ca/private.key ]]; then
 sed -i '/--cron/d' /etc/crontab
 echo "0 0 * * * root bash /root/.acme.sh/acme.sh --cron -f >/dev/null 2>&1" >> /etc/crontab
-green "root目录下的域名证书申请成功或已存在！域名证书（cert.crt）和密钥（private.key）已保存到 /root 文件夹" 
+green "域名证书申请成功或已存在！域名证书（cert.crt）和密钥（private.key）已保存到 /root/ca文件夹内" 
 yellow "公钥文件crt路径如下，可直接复制"
-green "/root/cert.crt"
+green "/root/ca/cert.crt"
 yellow "密钥文件key路径如下，可直接复制"
-green "/root/private.key"
-rm -rf acme.sh
+green "/root/ca/private.key"
+if [[ -f '/usr/local/bin/hysteria' ]]; then
+blue "检测到hysteria，此证书自动应用" && echo $ym > /root/ca/ca.log
+fi
+if [[ -f '/usr/bin/caddy' ]]; then
+blue "检测到naiveproxy，此证书自动应用" && echo $ym > /root/ca/ca.log
+fi
+if [[ -f '/usr/bin/x-ui' ]]; then
+blue "检测到x-ui，此证书可在面版上手动填写应用" && echo $ym > /root/ca/ca.log
+fi
 else
 fail
 fi
 }
 
 installCA(){
-bash ~/.acme.sh/acme.sh --install-cert -d ${ym} --key-file /root/private.key --fullchain-file /root/cert.crt --ecc
+bash ~/.acme.sh/acme.sh --install-cert -d ${ym} --key-file /root/ca/private.key --fullchain-file /root/ca/cert.crt --ecc
+}
+
+checkacmeca(){
+nowca=`bash /root/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}'`
+if [[ $nowca == $ym ]]; then
+red "经检测，输入的域名已有证书申请记录，不用重复申请"
+red "证书申请记录如下："
+bash /root/.acme.sh/acme.sh --list
+yellow "如果一定要重新申请，请先执行删除证书选项" && exit
+fi
 }
 
 ACMEstandaloneDNS(){
 readp "请输入解析完成的二级域名:" ym
 green "已输入的二级域名:$ym" && sleep 1
+checkacmeca
 domainIP=$(curl -s ipget.net/?ip="$ym")
 wro
 if [[ $domainIP = $v4 ]]; then
@@ -132,19 +152,23 @@ fi
 installCA
 checktls
 }
+
 ACMEDNS(){
+green "提示：泛域名申请前须要在解析平上设置一个名称为 * 字符的解析记录（输入格式：*.一级主域）"
 readp "请输入解析完成的域名:" ym
 green "已输入的域名:$ym" && sleep 1
+checkacmeca
 freenom=`echo $ym | awk -F '.' '{print $NF}'`
 if [[ $freenom =~ tk|ga|gq|ml|cf ]]; then
-red "经检测，你正在使用freenom免费域名解析，不支持当前DNS API模式，脚本退出" && rm -rf acme.sh && exit 
+red "经检测，你正在使用freenom免费域名解析，不支持当前DNS API模式，脚本退出" && exit 
 fi
-domainIP=$(curl -s ipget.net/?ip=acme.sh."$ym")
-if [[ -n $(echo $domainIP | grep nginx) ]]; then
-green "经检测，当前为单域名证书申请" && sleep 2
-domainIP=$(curl -s ipget.net/?ip="$ym")
+domainIP=$(curl -s ipget.net/?ip=$ym)
+if [[ -n $(echo $domainIP | grep nginx) && -n $(echo $ym | grep \*) ]]; then
+green "经检测，当前为泛域名证书申请，" && sleep 2
+abc=ca.acme$(echo $ym | tr -d '*')
+domainIP=$(curl -s ipget.net/?ip=$abc)
 else
-green "经检测，当前为泛域名证书申请" && sleep 2
+green "经检测，当前为单域名证书申请，" && sleep 2
 fi
 wro
 echo
@@ -190,11 +214,12 @@ esac
 installCA
 checktls
 }
+
 wro(){
 v4v6
 if [[ -n $(echo $domainIP | grep nginx) ]]; then
 yellow "当前域名解析到的IP：无"
-red "域名解析无效，请检查域名是否填写正确或稍等几分钟等待解析完成再执行脚本" && rm -rf acme.sh && exit 
+red "域名解析无效，请检查域名是否填写正确或稍等几分钟等待解析完成再执行脚本" && exit 
 elif [[ -n $(echo $domainIP | grep ":") || -n $(echo $domainIP | grep ".") ]]; then
 if [[ $domainIP != $v4 ]] && [[ $domainIP != $v6 ]]; then
 yellow "当前域名解析到的IP：$domainIP"
@@ -202,7 +227,7 @@ red "当前域名解析的IP与当前VPS使用的IP不匹配"
 green "建议如下："
 yellow "1、请确保CDN小黄云关闭状态(仅限DNS)，其他域名解析网站设置同理"
 yellow "2、请检查域名解析网站设置的IP是否正确"
-rm -rf acme.sh && exit 
+exit 
 else
 green "恭喜，域名解析正确，当前域名解析到的IP：$domainIP"
 fi
@@ -211,10 +236,11 @@ fi
 
 acme(){
 yellow "稍等3秒，检测IP环境中"
+mkdir -p /root/ca
 wgcfv6=$(curl -s6m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
 wgcfv4=$(curl -s4m6 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
 if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
-ab="1.选择standalone独立模式申请证书（仅需域名），安装过程中将强制释放80端口，相关http应用端口可能都将失效，请自行处理。\n2.选择DNS API模式申请证书（需域名、ID、Key），目前支持Cloudflare域名解析平台、腾讯域名解析平台、阿里域名解析平台\n0.返回上一层\n 请选择："
+ab="1.选择独立模式申请证书（仅需域名，小白推荐），安装过程中将强制释放80端口\n2.选择DNS API模式申请证书（需域名、ID、Key），自动识别单域名与泛域名\n0.返回上一层\n 请选择："
 readp "$ab" cd
 case "$cd" in 
 1 ) acme1 && acme2 && acme3 && ACMEstandaloneDNS;;
@@ -225,7 +251,7 @@ else
 yellow "检测到正在使用WARP接管VPS出站，现执行临时关闭"
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
 green "WARP已临时闭关"
-ab="1.选择standalone独立模式申请证书（仅需域名）,安装过程中将强制释放80端口，相关http应用端口可能都将失效，请自行处理。\n2.选择DNS API模式申请证书（需域名、ID、Key），目前支持Cloudflare域名解析平台、腾讯域名解析平台、阿里域名解析平台\n0.返回上一层\n 请选择："
+ab="1.选择独立模式申请证书（仅需域名，小白推荐），安装过程中将强制释放80端口，相关应用自行手动重启恢复\n2.选择DNS API模式申请证书（需域名、ID、Key），自动识别单域名与泛域名\n0.返回上一层\n 请选择："
 readp "$ab" cd
 case "$cd" in 
 1 ) acme1 && acme2 && acme3 && ACMEstandaloneDNS;;
@@ -238,63 +264,74 @@ green "WARP已恢复开启"
 fi
 }
 Certificate(){
-[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && rm -rf acme.sh && exit 
+[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && exit 
 green "Main_Domainc下显示的域名就是已申请成功的域名证书，Renew下显示对应域名证书的自动续期时间点"
 bash /root/.acme.sh/acme.sh --list
-echo
-readp "请输入要撤销并删除的域名证书（复制Main_Domain下显示的域名，退出请按Ctrl+c）:" ym
-if [[ -n $(bash /root/.acme.sh/acme.sh --list | grep $ym) ]]; then
-bash /root/.acme.sh/acme.sh --revoke -d ${ym} --ecc
-bash /root/.acme.sh/acme.sh --remove -d ${ym} --ecc
-rm -rf cert.crt private.key
-green "撤销并删除${ym}域名证书成功"
+#readp "请输入要撤销并删除的域名证书（复制Main_Domain下显示的域名，退出请按Ctrl+c）:" ym
+#if [[ -n $(bash /root/.acme.sh/acme.sh --list | grep $ym) ]]; then
+#bash /root/.acme.sh/acme.sh --revoke -d ${ym} --ecc
+#bash /root/.acme.sh/acme.sh --remove -d ${ym} --ecc
+#rm -rf /root/ca
+#green "撤销并删除${ym}域名证书成功"
+#else
+#red "未找到你输入的${ym}域名证书，请自行核实！" && exit
+#fi
+}
+
+
+acmeshow(){
+if [[ -n $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]]; then
+caacme1=`bash /root/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}'`
+if [[ -n $caacme1 ]]; then
+caacme=$caacme1
 else
-red "未找到你输入的${ym}域名证书，请自行核实！" && exit
+caacme='无证书申请记录'
+fi
+else
+caacme='未安装acme'
 fi
 }
+
 acmerenew(){
-[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && rm -rf acme.sh && exit 
-green "Main_Domainc下显示的域名就是已申请成功的域名证书，Renew下显示对应域名证书的自动续期时间点"
-bash /root/.acme.sh/acme.sh --list
+[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && exit 
+green "以下显示的域名就是已申请成功的域名证书"
+bash /root/.acme.sh/acme.sh --list | tail -1 | awk '{print $1}'
 echo
-ab="1.无脑一键续期所有证书（推荐）\n2.选择指定的域名证书续期\n0.返回上一层\n 请选择："
-readp "$ab" cd
-case "$cd" in 
-1 ) 
+#ab="1.无脑一键续期所有证书（推荐）\n2.选择指定的域名证书续期\n0.返回上一层\n 请选择："
+#readp "$ab" cd
+#case "$cd" in 
+#1 ) 
+green "开始续期证书…………" && sleep 3
 bash /root/.acme.sh/acme.sh --cron -f
 checktls
-;;
-2 ) 
-readp "请输入要续期的域名证书（复制Main_Domain下显示的域名）:" ym
-if [[ -n $(bash /root/.acme.sh/acme.sh --list | grep $ym) ]]; then
-bash /root/.acme.sh/acme.sh --renew -d ${ym} --force --ecc
-checktls
-else
-red "未找到你输入的${ym}域名证书，请自行核实！" && exit
-fi
-;;
-0 ) start_menu;;
-esac
+#;;
+#2 ) 
+#readp "请输入要续期的域名证书（复制Main_Domain下显示的域名）:" ym
+#if [[ -n $(bash /root/.acme.sh/acme.sh --list | grep $ym) ]]; then
+#bash /root/.acme.sh/acme.sh --renew -d ${ym} --force --ecc
+#checktls
+#else
+#red "未找到你输入的${ym}域名证书，请自行核实！" && exit
+#fi
+#;;
+#0 ) start_menu;;
+#esac
 }
 uninstall(){
-[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && rm -rf acme.sh && exit 
+[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && yellow "未安装acme.sh证书申请，无法执行" && exit 
 curl https://get.acme.sh | sh
 bash /root/.acme.sh/acme.sh --uninstall
-rm -rf cert.crt private.key
+rm -rf /root/ca
 rm -rf ~/.acme.sh acme.sh
 sed -i '/--cron/d' /etc/crontab
 [[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && green "acme.sh卸载完毕" || red "acme.sh卸载失败"
 }
 start_menu(){
-clear
-yellow " 提示："
-yellow " 一、standalone模式仅支持单域名证书申请"
-yellow " 二、DNS API模式不支持freenom免费域名申请，支持单域名与泛域名证书申请"
-echo
-green " 1. acme.sh申请letsencrypt ECC证书（支持standalone模式与DNS API模式） "
-green " 2. 查询已申请成功的域名及自动续期时间点；撤销并删除当前已申请的域名证书 "
-green " 3. 手动一键续期或指定续期的域名证书 "
-green " 4. 卸载一键ACME证书申请脚本 "
+red "========================================================================="
+green " 1. acme.sh申请letsencrypt ECC证书（支持独立模式与DNS API模式） "
+green " 2. 查询已申请成功的域名及自动续期时间点 "
+green " 3. 手动一键证书续期 "
+green " 4. 删除证书并卸载一键ACME证书申请脚本 "
 green " 0. 退出 "
 read -p "请输入数字:" NumberInput
 case "$NumberInput" in     
@@ -302,7 +339,7 @@ case "$NumberInput" in
 2 ) Certificate;;
 3 ) acmerenew;;
 4 ) uninstall;;
-* ) rm -rf acme.sh && exit      
+* ) exit      
 esac
 }   
 start_menu "first" 
