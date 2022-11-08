@@ -17,7 +17,7 @@ bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/
 ```
 一键脚本：
 ```
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/naiveproxy.sh && bash naiveproxy.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh && bash naiveproxy.sh
 ```
 
 
