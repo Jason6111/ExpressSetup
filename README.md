@@ -15,6 +15,11 @@ wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.s
 ```  
 bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 ```
+一键脚本：
+```
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/naiveproxy/main/naiveproxy.sh && bash naiveproxy.sh
+```
+
 
 ## 哪吒探针配置
 git认证
