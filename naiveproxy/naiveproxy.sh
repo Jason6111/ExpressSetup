@@ -247,6 +247,13 @@ done
 fi
 blue "已确认端口：$port\n"
 }
+inswym(){
+readp "设置伪装域名（回车跳过为随机6位字符）：" wym
+if [[ -z ${wym} ]]; then
+user=`www.xxxxx520.com`
+fi
+blue "已确认用户名：${wym}\n"
+}
 insuser(){
 readp "设置naiveproxy用户名（回车跳过为随机6位字符）：" user
 if [[ -z ${user} ]]; then
@@ -296,7 +303,7 @@ route {
    hide_via
    probe_resistance
   }
- reverse_proxy  https://www.xxxxx520.com  {
+ reverse_proxy  $wym  {
    header_up  Host  {upstream_hostport}
    header_up  X-Forwarded-Host  {host}
   }
