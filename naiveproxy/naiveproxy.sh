@@ -530,7 +530,7 @@ else
 red "naiveproxy服务启动失败，请运行systemctl status caddy查看服务状态并反馈，脚本退出" && exit
 fi
 red "======================================================================================"
-url="naive+https://${user}:${pswd}@${ym}:$port?padding=true#Naive-${ymip}"
+url="naive+https://${user}:${pswd}@${ym}:$port?padding=true#Naive-${ym}"
 echo ${url} > /root/naive/URL.txt
 green "\nnaiveproxy代理服务安装完成，生成脚本的快捷方式为 na" && sleep 3
 blue "\nv2rayn客户端配置文件v2rayn.json保存到 /root/naive/v2rayn.json\n"
