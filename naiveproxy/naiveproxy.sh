@@ -106,7 +106,6 @@ ufw disable >/dev/null 2>&1
 iptables -P INPUT ACCEPT >/dev/null 2>&1
 iptables -P FORWARD ACCEPT >/dev/null 2>&1
 iptables -P OUTPUT ACCEPT >/dev/null 2>&1
-iptables -t nat -F >/dev/null 2>&1
 iptables -t mangle -F >/dev/null 2>&1
 iptables -F >/dev/null 2>&1
 iptables -X >/dev/null 2>&1
@@ -326,8 +325,10 @@ Group=root
 ExecStart=/usr/bin/caddy run --environ --config /etc/caddy/Caddyfile
 ExecReload=/usr/bin/caddy reload --config /etc/caddy/Caddyfile
 TimeoutStopSec=5s
-PrivateTmp=true
-ProtectSystem=full
+PrivateTmp=false
+NoNewPrivileges=yes
+ProtectHome=false
+ProtectSystem=false
 [Install]
 WantedBy=multi-user.target
 EOF
