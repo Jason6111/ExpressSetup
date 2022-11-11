@@ -15,7 +15,7 @@ wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.s
 ```  
 bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 ```
-一键脚本：
+一键naiveproxy
 ```
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh && bash naiveproxy.sh
 ```
