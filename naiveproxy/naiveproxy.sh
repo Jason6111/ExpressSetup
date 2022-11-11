@@ -454,7 +454,7 @@ naiveports=`cat /etc/caddy/Caddyfile 2>/dev/null | awk '{print $1}' | grep : | t
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
 status=$(white "naiveproxy状态：\c";green "运行中    \c";white "可代理端口：\c";green "$naiveports";white "WARP状态：      \c";eval echo \$wgcf)
 elif [[ -z $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
-status=$(white "naiveproxy状态：\c";yellow "未启动,可尝试选择4，开启或者重启naiveproxy";white "WARP状态：      \c";eval echo \$wgcf)
+status=$(white "naiveproxy状态：\c";yellow "未启动,可尝试选择4，开启或者重启，依旧如此建议卸载重装naiveproxy";white "WARP状态：      \c";eval echo \$wgcf)
 else
 status=$(white "naiveproxy状态：\c";red "未安装";white "WARP状态：      \c";eval echo \$wgcf)
 fi
