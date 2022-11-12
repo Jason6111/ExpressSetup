@@ -174,7 +174,7 @@ apt install golang-go && forwardproxy
 fi
 cd
 rest
-lastvsion=v`curl -Ls https://data.jsdelivr.com/v1/package/gh/klzgrad/naiveproxy | sed -n 4p | tr -d ',"' | awk '{print $1}'
+lastvsion=v`curl -Ls https://data.jsdelivr.com/v1/package/gh/klzgrad/naiveproxy | sed -n 4p | tr -d ',"' | awk '{print $1}'`
 echo $lastvsion > /root/version
 else 
 red "输入错误，请重新选择" && inscaddynaive
