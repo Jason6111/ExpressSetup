@@ -1,5 +1,5 @@
 #!/bin/bash
-naygV="22.11.7 V 1.6"
+naygV="22.11.12 V 1.8"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/naiveproxy.sh
 red='\033[0;31m'
@@ -119,8 +119,6 @@ fi
 }
 
 insupdate(){
-rm -f /etc/systemd/system/caddy.service
-rm -rf /usr/bin/caddy /etc/caddy /root/naive /usr/bin/na
 if [[ $release = Centos ]]; then
 if [[ ${vsid} =~ 8 ]]; then
 cd /etc/yum.repos.d/ && mkdir backup && mv *repo backup/ 
@@ -151,7 +149,7 @@ mv caddy /usr/bin/
 inscaddynaive(){
 naygvsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version"`
 green "请选择安装或者更新 naiveproxy 内核方式:"
-readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前脚本已更新到最新版本号： $naygvsion （快速安装，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
+readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前已编译到最新版本号： $naygvsion （快速安装，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
 if [ -z "$chcaddynaive" ] || [ $chcaddynaive == "1" ]; then
 insupdate
 cd /root
@@ -176,12 +174,20 @@ apt install golang-go && forwardproxy
 fi
 cd
 rest
-lastvsion=`curl -s "https://api.github.com/repos/klzgrad/naiveproxy/releases/latest" | grep linux-x64 | grep browser_download_url | cut -d : -f 2,3 | tr -d \" | sed -n 1p | cut -f8 -d '/'`
+lastvsion=v`curl -Ls https://data.jsdelivr.com/v1/package/gh/klzgrad/naiveproxy | sed -n 4p | tr -d ',"' | awk '{print $1}'
 echo $lastvsion > /root/version
 else 
 red "输入错误，请重新选择" && inscaddynaive
 fi
+version(){
+if [[ ! -d /etc/caddy/ ]]; then
+mkdir /etc/caddy >/dev/null 2>&1
+fi
+mv version /etc/caddy/
 }
+version
+}
+
 inscertificate(){
 green "naiveproxy协议证书申请方式选择如下:"
 readp "1. acme一键申请证书脚本（支持常规80端口模式与dns api模式），已用此脚本申请的证书则自动识别（回车默认）\n2. 自定义证书路径（非/root/ca路径）\n请选择：" certificate
@@ -284,9 +290,8 @@ done
 fi
 blue "已确认端口：$caddyport\n"
 green "设置naiveproxy的配置文件、服务进程……\n"
-mkdir -p /root/naive
-mkdir -p /etc/caddy
-mv version /etc/caddy/
+mkdir /root/naive >/dev/null 2>&1
+mkdir /etc/caddy >/dev/null 2>&1
 cat << EOF >/etc/caddy/Caddyfile
 {
 http_port $caddyport
@@ -474,7 +479,7 @@ upnaive(){
 if [[ -z $(systemctl status caddy 2>/dev/null | grep -w active) && ! -f '/etc/caddy/Caddyfile' ]]; then
 red "未正常安装naiveproxy" && exit
 fi
-yellow "升级naiveproxy内核版本\n"
+green "\n升级naiveproxy内核版本\n"
 inscaddynaive
 systemctl restart caddy
 green "naiveproxy内核版本升级成功" && na
@@ -517,6 +522,8 @@ insna(){
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
 green "已安装naiveproxy，重装请先执行卸载功能" && exit
 fi
+rm -f /etc/systemd/system/caddy.service
+rm -rf /usr/bin/caddy /etc/caddy /root/naive /usr/bin/na
 inscaddynaive ; inscertificate ; insport ; inswym ; insuser ; inspswd ; insconfig
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
 green "naiveproxy服务启动成功"
@@ -594,7 +601,7 @@ esac
 }
 if [ $# == 0 ]; then
 start
-lastvsion=`curl -s "https://api.github.com/repos/klzgrad/naiveproxy/releases/latest" | grep linux-x64 | grep browser_download_url | cut -d : -f 2,3 | tr -d \" | sed -n 1p | cut -f8 -d '/'`
+lastvsion=v`curl -Ls https://data.jsdelivr.com/v1/package/gh/klzgrad/naiveproxy | sed -n 4p | tr -d ',"' | awk '{print $1}'`
 ygvsion=`cat /etc/caddy/version 2>/dev/null`
 start_menu
 fi
