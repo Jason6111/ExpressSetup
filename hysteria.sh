@@ -1,5 +1,5 @@
 #!/bin/bash
-hyygV="22.10.27 V 4.0"
+hyygV="22.11.12 V 5.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
@@ -97,6 +97,7 @@ fi
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P lsof) ]] || (yellow "检测到lsof未安装，升级安装中" && $yumapt update;$yumapt install lsof)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
+[[ ! $(type -P iptables) ]] && ($yumapt update;$yumapt install iptables-persistent)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
 if [[ -z $(grep 'DiG 9' /etc/hosts) ]]; then
 v4=$(curl -s4m5 https://ip.gs -k)
@@ -111,7 +112,6 @@ ufw disable >/dev/null 2>&1
 iptables -P INPUT ACCEPT >/dev/null 2>&1
 iptables -P FORWARD ACCEPT >/dev/null 2>&1
 iptables -P OUTPUT ACCEPT >/dev/null 2>&1
-iptables -t nat -F >/dev/null 2>&1
 iptables -t mangle -F >/dev/null 2>&1
 iptables -F >/dev/null 2>&1
 iptables -X >/dev/null 2>&1
@@ -199,7 +199,7 @@ fi
 
 inspr(){
 green "hysteria的传输协议选择如下:"
-readp "1. udp（回车默认，推荐）\n2. wechat-video（推荐）\n3. faketcp（仅支持linux客户端且需要root权限）\n请选择：" protocol
+readp "1. udp（支持udp多端口跳跃功能，回车默认）\n2. wechat-video\n3. faketcp（仅支持linux客户端且需要root权限）\n请选择：" protocol
 if [ -z "${protocol}" ] || [ $protocol == "1" ];then
 hysteria_protocol="udp"
 elif [ $protocol == "2" ];then
@@ -214,20 +214,78 @@ blue "已确认传输协议: ${hysteria_protocol}\n"
 }
 
 insport(){
-readp "hysteria端口设置[1-65535]（回车跳过为2000-65535之间的随机端口）：" port
+dports(){
+readp "\n设置多端口(建议10000-65535之间，每次仅增加一个)：" manyports
+iptables -t nat -A PREROUTING -p udp --dport $manyports  -j DNAT --to-destination :$port
+ip6tables -t nat -A PREROUTING -p udp --dport $manyports  -j DNAT --to-destination :$port
+blue "\n已确认转发的多端口：$manyports\n"
+echo -n $manyports, >> /root/HY/mports
+}
+
+arports(){
+readp "\n添加多端口，继续按回车，退出按任意键：" choose
+if [[ -z $choose ]]; then
+until [[ -n $choose ]] && sed -i 's/.$//' /root/HY/mports
+do
+[[ -z $choose ]] && dports && readp "\n是否继续添加多端口？继续按回车，退出按任意键：" choose
+done
+fi
+}
+
+fports(){
+readp "\n添加一个范围端口的起始端口(建议10000-65535之间)：" firstudpport
+readp "\n添加一个范围端口的末尾端口(建议10000-65535之间，要比上面起始端口大)：" endudpport
+if [[ $firstudpport -ge $endudpport ]]; then
+until [[ $firstudpport -le $endudpport ]]
+do
+[[ $firstudpport -ge $endudpport ]] && yellow "\n起始端口小于末尾端口啦，人才！请重新输入起始/末尾端口" && readp "\n添加一个范围端口的起始端口(建议10000-65535之间)：" firstudpport && readp "\n添加一个范围端口的末尾端口(建议10000-65535之间，要比上面起始端口大)：" endudpport
+done
+fi
+iptables -t nat -A PREROUTING -p udp --dport $firstudpport:$endudpport  -j DNAT --to-destination :$port
+ip6tables -t nat -A PREROUTING -p udp --dport $firstudpport:$endudpport  -j DNAT --to-destination :$port
+blue "\n已确认转发的范围端口：$firstudpport 到 $endudpport\n"
+}
+
+iptables -t nat -F PREROUTING >/dev/null 2>&1
+rm -rf /root/HY/mports
+readp "设置hysteria转发主端口[1-65535]（回车跳过为2000-65535之间的随机端口）：" port
 if [[ -z $port ]]; then
 port=$(shuf -i 2000-65535 -n 1)
 until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义hysteria端口:" port
+[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义hysteria转发主端口:" port
 done
 else
 until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义hysteria端口:" port
+[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义hysteria转发主端口:" port
 done
 fi
-blue "已确认端口：$port\n"
+blue "\n已确认转发主端口：$port\n"
+if [[ ${hysteria_protocol} == "udp" || $(cat /etc/hysteria/config.json 2>/dev/null | grep protocol | awk '{print $2}' | awk -F '"' '{ print $2}') == "udp" ]]; then
+green "\n经检测，当前选择的是udp协议，支持端口自动切换功能（默认每10秒切换）\n"
+readp "1. 继续使用默认单端口（回车默认）\n2. 使用多端口、范围端口的无缝自动切换功能\n请选择：" choose
+if [ -z "${choose}" ] || [ $choose == "1" ]; then
+echo
+elif [ $choose == "2" ]; then
+readp "1. 使用多端口\n2. 使用范围端口\n3. 使用多端口+范围端口\n请选择：" choose
+if [ $choose == "1" ]; then
+arports
+elif [ $choose == "2" ]; then
+fports
+elif [ $choose == "3" ]; then
+arports
+fports
+else
+red "输入错误，请重新选择" && insport
+fi
+iptables -t nat -A PREROUTING -p udp --dport $port  -j DNAT --to-destination :$port
+ip6tables -t nat -A PREROUTING -p udp --dport $port  -j DNAT --to-destination :$port
+else
+red "输入错误，请重新选择" && insport
+fi
+fi
+netfilter-persistent save >/dev/null 2>&1
 }
 
 inspswd(){
@@ -236,17 +294,24 @@ if [[ -z ${pswd} ]]; then
 pswd=`date +%s%N |md5sum | cut -c 1-6`
 fi
 blue "已确认验证密码：${pswd}\n"
-#readp "设置最大上传速度/Mbps(默认:100): " hysteria_up_mbps
-#[[ -z "${hysteria_up_mbps}" ]] && hysteria_up_mbps=100
-#green "确定最大上传速度$hysteria_up_mbps"
-#readp "设置最大下载速度/Mbps(默认:100): " hysteria_down_mbps
-#[[ -z "${hysteria_down_mbps}" ]] && hysteria_down_mbps=100
-#green "确定最大下载速度$hysteria_down_mbps"
+}
+
+portss(){
+manyports=`cat /root/HY/mports 2>/dev/null`
+if [[ -z $firstudpport && -z $manyports ]]; then
+clport=$port
+elif [[ -n $firstudpport && -n $manyports ]]; then
+clport="$port,$manyports,$firstudpport-$endudpport"
+elif [[ -z $firstudpport ]]; then
+clport="$port,$manyports"
+elif [[ -z $manyports ]]; then
+clport="$port,$firstudpport-$endudpport"
+fi
+
 }
 
 insconfig(){
 green "设置配置文件中……，稍等5秒"
-mkdir -p /root/HY/acl
 v4=$(curl -s4m5 https://ip.gs -k)
 [[ -z $v4 ]] && rpip=64 || rpip=46
 cat <<EOF > /etc/hysteria/config.json
@@ -267,8 +332,8 @@ cat <<EOF > /etc/hysteria/config.json
 EOF
 
 sureipadress(){
-ip=$(curl -s6m5 https://ip.gs -k) || ip=$(curl -s4m5 https://ip.gs -k)
-[[ -n $(echo $ip | grep ":") ]] && ymip="[$ip]" || ymip=$ip
+ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
+[[ -z $(echo $ip | grep ":") ]] && ymip=$ip || ymip="[$ip]" 
 }
 
 wgcfv6=$(curl -s6m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
@@ -288,9 +353,10 @@ ym=$(cat /etc/ca/ca.log)
 ymip=$ym;ins=false
 fi
 
+portss
 cat <<EOF > /root/HY/acl/v2rayn.json
 {
-"server": "${ymip}:${port}",
+"server": "${ymip}:${clport}",
 "protocol": "${hysteria_protocol}",
 "up_mbps": 200,
 "down_mbps": 1000,
@@ -311,7 +377,8 @@ cat <<EOF > /root/HY/acl/v2rayn.json
 "server_name": "${ym}",
 "insecure": ${ins},
 "retry": 3,
-"retry_interval": 3
+"retry_interval": 3,
+"hop_interval": 10
 }
 EOF
 }
@@ -322,6 +389,8 @@ systemctl disable hysteria-server.service >/dev/null 2>&1
 rm -f /lib/systemd/system/hysteria-server.service /lib/systemd/system/hysteria-server@.service
 rm -rf /usr/local/bin/hysteria /etc/hysteria /root/HY /root/install_server.sh /root/hysteria.sh /usr/bin/hy
 sed -i '/systemctl restart hysteria-server/d' /etc/crontab
+iptables -t nat -F PREROUTING >/dev/null 2>&1
+netfilter-persistent save >/dev/null 2>&1
 green "hysteria卸载完成！"
 }
 
@@ -371,7 +440,7 @@ fi
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh
 chmod +x /root/hysteria.sh 
 ln -sf /root/hysteria.sh /usr/bin/hy
-green "安装脚本升级成功"
+green "安装脚本升级成功" && hy
 }
 
 cfwarp(){
@@ -409,7 +478,7 @@ red "未正常安装hysteria!" && exit
 fi
 certclient(){
 sureipadress(){
-ip=$(curl -s6m5 https://ip.gs -k) || ip=$(curl -s4m5 https://ip.gs -k)
+ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
 certificate=`cat /etc/hysteria/config.json 2>/dev/null | grep cert | awk '{print $2}' | awk -F '"' '{ print $2}'`
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
 if [[ -n $(curl -s6m5 https://ip.gs -k) ]]; then
@@ -451,8 +520,13 @@ green "无本acme脚本申请证书记录，当前为自定义证书模式"
 readp "请输入已解析完成的域名:" ym
 blue "输入的域名：$ym，已直接引用\n"
 fi
-elif [ $certacme == "2" ]; then
+elif [ $certacme == "2" ]; then 
+curl https://get.acme.sh | sh
+bash /root/.acme.sh/acme.sh --uninstall
 rm -rf /root/ca
+rm -rf ~/.acme.sh acme.sh
+sed -i '/--cron/d' /etc/crontab
+[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && green "acme.sh卸载完毕" || red "acme.sh卸载失败"
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
 ym=$(cat /root/ca/ca.log 2>/dev/null)
 if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
@@ -533,18 +607,21 @@ chip(){
 rpip=`cat /etc/hysteria/config.json 2>/dev/null | grep resolve_preference | awk '{print $2}' | awk -F '"' '{ print $2}'`
 sed -i "4s/$rpip/$rrpip/g" /etc/hysteria/config.json
 systemctl restart hysteria-server
-[[ $rrpip = 46 ]] && v4v6="IPV4优先：$(curl -s4 https://ip.gs -k)" || v4v6="IPV6优先：$(curl -s6 https://ip.gs -k)"
-blue "确定当前已更换的IP优先级：${v4v6}\n"
 }
 green "切换IPV4/IPV6出站优先级选择如下:"
-readp "1. IPV4优先\n2. IPV6优先\n请选择：" rrpip
-if [[ $rrpip == "1" && -n $ipv4 ]];then
-rrpip="46" && chip
-elif [[ $rrpip == "2" && -n $ipv6 ]];then
-rrpip="64" && chip
+readp "1. IPV4优先\n2. IPV6优先\n3. 仅IPV4\n4. 仅IPV6\n请选择：" choose
+if [[ $choose == "1" && -n $ipv4 ]]; then
+rrpip="46" && chip && v4v6="IPV4优先：$ipv4"
+elif [[ $choose == "2" && -n $ipv6 ]]; then
+rrpip="64" && chip && v4v6="IPV6优先：$ipv6"
+elif [[ $choose == "3" && -n $ipv4 ]]; then
+rrpip="4" && chip && v4v6="仅IPV4：$ipv4"
+elif [[ $choose == "4" && -n $ipv6 ]]; then
+rrpip="6" && chip && v4v6="仅IPV6：$ipv6"
 else 
-red "无IPV4/IPV6优先选择项或者输入错误" && changeip
+red "当前不存在你选择的IPV4/IPV6地址，或者输入错误" && changeip
 fi
+blue "确定当前已更换的IP优先级：${v4v6}\n"
 }
 
 changepswd(){
@@ -552,6 +629,7 @@ if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -
 red "未正常安装hysteria!" && exit
 fi
 oldpswd=`cat /etc/hysteria/config.json 2>/dev/null | grep -w password | awk '{print $2}' | awk -F '"' '{ print $2}' | sed -n 2p`
+servport=`cat /etc/hysteria/config.json 2>/dev/null  | awk '{print $2}' | sed -n 2p | tr -d ',:"'`
 echo
 blue "当前正在使用的验证密码：$oldpswd"
 echo
@@ -570,20 +648,21 @@ red "未正常安装hysteria!" && exit
 fi
 oldport=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| awk -F ':' '{ print $NF}'`
 echo
-blue "当前正在使用的端口：$oldport"
+blue "当前在使用的转发端口：$oldport 已全部作废，请赶紧设置哦"
 echo
 insport
-sed -i "2s/$oldport/$port/g" /etc/hysteria/config.json
-sed -i "2s/$oldport/$port/g" /root/HY/acl/v2rayn.json
-sed -i "s/$oldport/$port/g" /root/HY/URL.txt
+portss
+sed -i "2s/$servport/$port/g" /etc/hysteria/config.json
+sed -i "2s/$oldport/$clport/g" /root/HY/acl/v2rayn.json
+sed -i "s/$servport/$port/g" /root/HY/URL.txt
 systemctl restart hysteria-server
-blue "hysteria代理服务的端口已由 $oldport 更换为 $port ，配置已更新 "
+blue "hysteria代理服务的转发主端口已由 $servport 更换为 $port ，配置已更新 "
 hysteriashare
 }
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 更换端口\n6. 返回上层\n请选择：" choose
+readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ygkkkca路径上传自定义证书)\n4. 更换验证密码\n5. 变更端口（将重置所有端口）：单端口、多端口、范围端口\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
@@ -602,7 +681,9 @@ fi
 }
 
 inshysteria(){
-inshy ; inscertificate ; inspr ; insport ; inspswd
+inshy ; inscertificate
+mkdir -p /root/HY/acl
+inspr ; insport ; inspswd
 if [[ ! $vi =~ lxc|openvz ]]; then
 sysctl -w net.core.rmem_max=8000000
 sysctl -p
@@ -624,8 +705,8 @@ white "$status\n"
 sureipadress(){
 certificate=`cat /etc/hysteria/config.json 2>/dev/null | grep cert | awk '{print $2}' | awk -F '"' '{ print $2}'`
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
-ip=$(curl -s6m5 https://ip.gs -k) || ip=$(curl -s4m5 https://ip.gs -k)
-[[ -n $(echo $ip | grep ":") ]] && ymip="[$ip]" || ymip=$ip
+ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
+[[ -z $(echo $ip | grep ":") ]] && ymip=$ip || ymip="[$ip]"
 else
 ymip=$(cat /root/ca/ca.log)
 fi
@@ -633,12 +714,13 @@ fi
 wgcfgo
 url="hysteria://${ymip}:${port}?protocol=${hysteria_protocol}&auth=${pswd}&peer=${ym}&insecure=${ins}&upmbps=200&downmbps=1000&alpn=h3#hysteria-${ymip}"
 echo ${url} > /root/HY/URL.txt
-green "hysteria代理服务安装完成，生成脚本的快捷方式为 hy"
+red "======================================================================================"
+green "hysteria代理服务安装完成，生成脚本的快捷方式为 hy" && sleep 3
 blue "v2rayn客户端配置文件v2rayn.json及代理规则文件保存到 /root/HY/acl\n"
 yellow "$(cat /root/HY/acl/v2rayn.json)\n"
-blue "分享链接保存到 /root/HY/URL.txt"
+blue "分享链接保存到 /root/HY/URL.txt" && sleep 3
 yellow "${url}\n"
-green "二维码分享链接如下(SagerNet / Matsuri / 小火箭)"
+green "二维码分享链接如下(SagerNet / Matsuri / 小火箭)" && sleep 3
 qrencode -o - -t ANSIUTF8 "$(cat /root/HY/URL.txt)"
 else
 red "hysteria代理服务安装失败，请运行 systemctl status hysteria-server 查看服务日志" && exit
@@ -652,10 +734,23 @@ wgcfv4=$(curl -s4m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
 noprotocol=`cat /etc/hysteria/config.json 2>/dev/null | grep protocol | awk '{print $2}' | awk -F '"' '{ print $2}'`
 rpip=`cat /etc/hysteria/config.json 2>/dev/null | grep resolve_preference | awk '{print $2}' | awk -F '"' '{ print $2}'`
-[[ $rpip = 64 ]] && v4v6="IPV6优先：$(curl -s6 https://ip.gs -k)" || v4v6="IPV4优先：$(curl -s4 https://ip.gs -k)"
-status=$(white "hysteria状态：\c";green "运行中";white "hysteria协议：\c";green "$noprotocol";white "优先出站IP：  \c";green "$v4v6";white "WARP状态：    \c";eval echo \$wgcf)
+v4=$(curl -s4m5 https://ip.gs -k)
+v6=$(curl -s6m5 https://ip.gs -k)
+[[ -z $v4 ]] && showv4='IPV4地址丢失，请切换至IPV6或者重装hysteria' || showv4=$v4
+[[ -z $v6 ]] && showv6='IPV6地址丢失，请切换至IPV4或者重装hysteria' || showv6=$v6
+if [[ $rpip = 64 ]]; then
+v4v6="IPV6优先：$showv6"
+elif [[ $rpip = 46 ]]; then
+v4v6="IPV4优先：$showv4"
+elif [[ $rpip = 4 ]]; then
+v4v6="仅IPV4：$showv4"
+elif [[ $rpip = 6 ]]; then
+v4v6="仅IPV6：$showv6"
+fi
+oldport=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| awk -F ':' '{ print $NF}'`
+status=$(white "hysteria状态：\c";green "运行中";white "hysteria协议：\c";green "$noprotocol";white "优先出站IP：  \c";green "$v4v6   \c";white "可代理端口：\c";green "$oldport";white "WARP状态：    \c";eval echo \$wgcf)
 elif [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
-status=$(white "hysteria状态：\c";yellow "未启动,可尝试选择4，开启或者重启hysteria";white "WARP状态：    \c";eval echo \$wgcf)
+status=$(white "hysteria状态：\c";yellow "未启动,可尝试选择4，开启或者重启，依旧如此建议卸载重装hysteria";white "WARP状态：    \c";eval echo \$wgcf)
 else
 status=$(white "hysteria状态：\c";red "未安装";white "WARP状态：    \c";eval echo \$wgcf)
 fi
@@ -665,11 +760,15 @@ hysteriashare(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-green "当前v2rayn客户端配置文件v2rayn.json内容如下，保存到 /root/HY/acl/v2rayn.json\n"
+red "======================================================================================"
+oldport=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| awk -F ':' '{ print $NF}'`
+green "\n当前hysteria代理正在使用的端口：" && sleep 2
+blue "$oldport\n"
+green "当前v2rayn客户端配置文件v2rayn.json内容如下，保存到 /root/HY/acl/v2rayn.json\n" && sleep 2
 yellow "$(cat /root/HY/acl/v2rayn.json)\n"
-green "当前hysteria节点分享链接如下，保存到 /root/HY/URL.txt"
+green "当前hysteria节点分享链接如下，保存到 /root/HY/URL.txt" && sleep 2
 yellow "$(cat /root/HY/URL.txt)\n"
-green "当前hysteria节点二维码分享链接如下(SagerNet / Matsuri / 小火箭)"
+green "当前hysteria节点二维码分享链接如下(SagerNet / Matsuri / 小火箭)" && sleep 2
 qrencode -o - -t ANSIUTF8 "$(cat /root/HY/URL.txt)"
 }
 
@@ -680,7 +779,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green " 1. 安装hysteria（必选）" 
 green " 2. 卸载hysteria"
 white "----------------------------------------------------------------------------------"
-green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、端口）"
+green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、多端口动态复用）" 
 green " 4. 关闭、开启、重启hysteria"   
 green " 5. 更新hysteria安装脚本"  
 green " 6. 更新hysteria内核"
@@ -693,20 +792,21 @@ green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
 if [ "${hyygV}" = "${remoteV}" ]; then
-green "当前hysteria-yg安装脚本版本号：${hyygV} ，已是最新版本\n"
+echo -e "当前 hysteria-yg 安装脚本版本号：${bblue}${hyygV}${plain} ，已是最新版本\n"
 else
-green "当前hysteria-yg安装脚本版本号：${hyygV}"
-yellow "检测到最新hysteria-yg安装脚本版本号：${remoteV} ，可选择5进行更新\n"
+echo -e "当前 hysteria-yg 安装脚本版本号：${bblue}${hyygV}${plain}"
+echo -e "检测到最新 hysteria-yg 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择5进行更新\n"
 fi
 loVERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
 hyVERSION="v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/HyNetwork/Hysteria" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')"
 if [ "${loVERSION}" = "${hyVERSION}" ]; then
-green "当前hysteria内核版本号：${loVERSION} ，已是最新版本\n"
+echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain} ，已是最新版本"
 else
-green "当前hysteria内核版本号：${loVERSION}"
-yellow "检测到最新hysteria内核版本号：${hyVERSION} ，可选择6进行更新\n"
+echo -e "当前 hysteria 已安装内核版本号：${bblue}${loVERSION}${plain}"
+echo -e "检测到最新 hysteria 内核版本号：${yellow}${hyVERSION}${plain} ，可选择6进行更新"
 fi
 fi
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white "VPS系统信息如下："
 white "操作系统:     $(blue "$op")" && white "内核版本:     $(blue "$version")" && white "CPU架构 :     $(blue "$cpu")" && white "虚拟化类型:   $(blue "$vi")" && white "TCP算法:      $(blue "$bbr")"
 white "$status"
