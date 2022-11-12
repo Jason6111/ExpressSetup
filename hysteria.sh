@@ -3,6 +3,7 @@ hyygV="22.11.12 V 5.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
+yellow='\033[0;33m'
 bblue='\033[0;34m'
 plain='\033[0m'
 blue(){ echo -e "\033[36m\033[01m$1\033[0m";}
@@ -11,7 +12,7 @@ green(){ echo -e "\033[32m\033[01m$1\033[0m";}
 yellow(){ echo -e "\033[33m\033[01m$1\033[0m";}
 white(){ echo -e "\033[37m\033[01m$1\033[0m";}
 readp(){ read -p "$(yellow "$1")" $2;}
-[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit 1
+[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
 yellow " 请稍等3秒……正在扫描vps类型及参数中……"
 if [[ -f /etc/redhat-release ]]; then
 release="Centos"
@@ -28,7 +29,7 @@ release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
 else 
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit 1
+red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit
 fi
 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
 sys(){
@@ -40,9 +41,15 @@ version=`uname -r | awk -F "-" '{print $1}'`
 main=`uname  -r | awk -F . '{print $1}'`
 minor=`uname -r | awk -F . '{print $2}'`
 bit=`uname -m`
-[[ $bit = x86_64 ]] && cpu=amd64
-[[ $bit = aarch64 ]] && cpu=arm64
-[[ $bit = s390x ]] && cpu=s390x
+if [[ $bit = x86_64 ]]; then
+cpu=amd64
+elif [[ $bit = aarch64 ]]; then
+cpu=arm64
+elif [[ $bit = s390x ]]; then
+cpu=s390x
+else
+red "VPS的CPU架构为$bit 脚本不支持当前CPU架构，请使用amd64或arm64架构的CPU运行脚本" && exit
+fi
 vi=`systemd-detect-virt`
 rm -rf /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -60,13 +67,6 @@ fi
 }
 
 start(){
-if [[ -n $(sysctl net.ipv4.tcp_congestion_control 2>/dev/null | awk -F ' ' '{print $3}') ]]; then
-bbr=`sysctl net.ipv4.tcp_congestion_control | awk -F ' ' '{print $3}'`
-elif [[ -n $(ping 10.0.0.2 -c 2 | grep ttl) ]]; then
-bbr="openvz版bbr-plus"
-else
-bbr="暂不支持显示"
-fi
 if [[ $vi = openvz ]]; then
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
@@ -77,7 +77,7 @@ mknod net/tun c 10 200
 chmod 0666 net/tun
 TUN=$(cat /dev/net/tun 2>&1)
 if [[ ! $TUN =~ 'in bad state' ]] && [[ ! $TUN =~ '处于错误状态' ]] && [[ ! $TUN =~ 'Die Dateizugriffsnummer ist in schlechter Verfassung' ]]; then 
-green "添加TUN支持失败，建议与VPS厂商沟通或后台设置开启" && exit 0
+green "添加TUN支持失败，建议与VPS厂商沟通或后台设置开启" && exit
 else
 green "恭喜，添加TUN支持成功，现添加TUN守护功能" && sleep 4
 cat>/root/tun.sh<<-\EOF
@@ -147,14 +147,14 @@ wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install_se
 if [[ -f '/usr/local/bin/hysteria' ]]; then
 blue "成功安装hysteria版本：$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')\n"
 else
-red "安装hysteria失败" && exit
+red "安装hysteria失败" && rm -rf install_server.sh && exit
 fi
 rm -rf install_server.sh
 }
 
 inscertificate(){
 green "hysteria协议证书申请方式选择如下:"
-readp "1. www.bing.com自签证书（回车默认）\n2. acme一键申请证书（支持常规80端口模式与dns api模式）或已放置在/root/ca目录的自定义证书\n请选择：" certificate
+readp "1. www.bing.com自签证书（回车默认）\n2. acme一键申请证书脚本（支持常规80端口模式与dns api模式）或已放置在/root/ca目录的自定义证书\n请选择：" certificate
 if [ -z "${certificate}" ] || [ $certificate == "1" ]; then
 openssl ecparam -genkey -name prime256v1 -out /etc/hysteria/private.key
 openssl req -new -x509 -days 36500 -key /etc/hysteria/private.key -out /etc/hysteria/cert.crt -subj "/CN=www.bing.com"
@@ -307,7 +307,6 @@ clport="$port,$manyports"
 elif [[ -z $manyports ]]; then
 clport="$port,$firstudpport-$endudpport"
 fi
-
 }
 
 insconfig(){
@@ -349,7 +348,7 @@ fi
 if [[ $ym = www.bing.com ]]; then
 ins=true
 else
-ym=$(cat /etc/ca/ca.log)
+ym=$(cat /root/ca/ca.log)
 ymip=$ym;ins=false
 fi
 
@@ -490,8 +489,8 @@ else
 oldserver=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| cut -d ':' -f 1`
 fi
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
-ym=$(cat /etc/ca/ca.log)
-ymip=$(cat /etc/ca/ca.log)
+ym=$(cat /root/ca/ca.log)
+ymip=$(cat /root/ca/ca.log)
 else
 ym=www.bing.com
 ymip=$ip
@@ -629,7 +628,6 @@ if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -
 red "未正常安装hysteria!" && exit
 fi
 oldpswd=`cat /etc/hysteria/config.json 2>/dev/null | grep -w password | awk '{print $2}' | awk -F '"' '{ print $2}' | sed -n 2p`
-servport=`cat /etc/hysteria/config.json 2>/dev/null  | awk '{print $2}' | sed -n 2p | tr -d ',:"'`
 echo
 blue "当前正在使用的验证密码：$oldpswd"
 echo
@@ -647,6 +645,7 @@ if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -
 red "未正常安装hysteria!" && exit
 fi
 oldport=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| awk -F ':' '{ print $NF}'`
+servport=`cat /etc/hysteria/config.json 2>/dev/null  | awk '{print $2}' | sed -n 2p | tr -d ',:"'`
 echo
 blue "当前在使用的转发端口：$oldport 已全部作废，请赶紧设置哦"
 echo
