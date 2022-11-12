@@ -662,7 +662,7 @@ hysteriashare
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ygkkkca路径上传自定义证书)\n4. 更换验证密码\n5. 变更端口（将重置所有端口）：单端口、多端口、范围端口\n6. 返回上层\n请选择：" choose
+readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 变更端口（将重置所有端口）：单端口、多端口、范围端口\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
@@ -792,10 +792,10 @@ green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
 if [ "${hyygV}" = "${remoteV}" ]; then
-echo -e "当前 hysteria-yg 安装脚本版本号：${bblue}${hyygV}${plain} ，已是最新版本\n"
+echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyygV}${plain} ，已是最新版本\n"
 else
-echo -e "当前 hysteria-yg 安装脚本版本号：${bblue}${hyygV}${plain}"
-echo -e "检测到最新 hysteria-yg 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择5进行更新\n"
+echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyygV}${plain}"
+echo -e "检测到最新 hysteria 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择5进行更新\n"
 fi
 loVERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
 hyVERSION="v$(curl -Ls "https://data.jsdelivr.com/v1/package/resolve/gh/HyNetwork/Hysteria" | grep '"version":' | sed -E 's/.*"([^"]+)".*/\1/')"
