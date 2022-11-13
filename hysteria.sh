@@ -97,6 +97,7 @@ fi
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ $(type -P lsof) ]] || (yellow "检测到lsof未安装，升级安装中" && $yumapt update;$yumapt install lsof)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
+[[ ! $(type -P sysctl) ]] && ($yumapt update;$yumapt install procps)
 [[ ! $(type -P iptables) ]] && ($yumapt update;$yumapt install iptables-persistent)
 [[ ! $(type -P python3) ]] && (yellow "检测到python3未安装，升级安装中" && $yumapt update;$yumapt install python3)
 if [[ -z $(grep 'DiG 9' /etc/hosts) ]]; then
@@ -171,7 +172,7 @@ if [[ -f /root/ca/ca.log ]]; then
 ym=$(cat /root/ca/ca.log)
 blue "检测到的域名：$ym ，已直接引用\n"
 else
-green "无本acme脚本申请证书记录，当前为自定义证书模式"
+green "无acme脚本申请证书记录，当前为自定义证书模式"
 readp "请输入已解析完成的域名:" ym
 blue "输入的域名：$ym，已直接引用\n"
 fi
@@ -515,7 +516,7 @@ if [[ -f /root/ca/ca.log ]]; then
 ym=$(cat /root/ca/ca.log)
 blue "检测到的域名：$ym ，已直接引用\n"
 else
-green "无本acme脚本申请证书记录，当前为自定义证书模式"
+green "无acme脚本申请证书记录，当前为自定义证书模式"
 readp "请输入已解析完成的域名:" ym
 blue "输入的域名：$ym，已直接引用\n"
 fi
