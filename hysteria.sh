@@ -638,7 +638,7 @@ fi
 oldport=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| awk -F ':' '{ print $NF}'`
 servport=`cat /etc/hysteria/config.json 2>/dev/null  | awk '{print $2}' | sed -n 2p | tr -d ',:"'`
 echo
-blue "当前在使用的转发端口：$oldport 已全部作废，请赶紧设置哦"
+blue "当前在使用的转发端口：$oldport 已全部重置，请赶紧设置哦"
 echo
 insport
 portss
@@ -652,7 +652,7 @@ hysteriashare
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 变更端口（将重置所有端口）：单端口、多端口、范围端口\n6. 返回上层\n请选择：" choose
+readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 变更主端口或者开启多端口范围跳跃功能（将重置所有端口）\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
