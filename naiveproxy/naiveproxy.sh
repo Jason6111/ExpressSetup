@@ -127,7 +127,6 @@ curl -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-
 sed -i -e "s|mirrors.cloud.aliyuncs.com|mirrors.aliyun.com|g " /etc/yum.repos.d/CentOS-*
 sed -i -e "s|releasever|releasever-stream|g" /etc/yum.repos.d/CentOS-*
 yum clean all && yum makecache
-green "Centos 8 系统建议使用编译好的caddy2-naiveproxy版本" && inscaddynaive
 fi
 yum install epel-release -y
 else
@@ -161,6 +160,9 @@ rm caddy2-naive-linux-${cpu}.tar.gz -f
 cd
 rest
 elif [ $chcaddynaive == "2" ]; then
+if [[ $release = Centos ]] && [[ ${vsid} =~ 8 ]]; then
+green "Centos 8 系统建议使用编译好的caddy2-naiveproxy版本" && inscaddynaive
+fi
 insupdate
 cd /root
 if [[ $release = Centos ]]; then 
