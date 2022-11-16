@@ -200,7 +200,7 @@ fi
 
 inspr(){
 green "hysteria的传输协议选择如下:"
-readp "1. udp（支持udp多端口跳跃功能，回车默认）\n2. wechat-video\n3. faketcp（仅支持linux客户端且需要root权限）\n请选择：" protocol
+readp "1. udp（支持多端口跳跃功能，回车默认）\n2. wechat-video\n3. faketcp（仅支持linux客户端且需要root权限）\n请选择：" protocol
 if [ -z "${protocol}" ] || [ $protocol == "1" ];then
 hysteria_protocol="udp"
 elif [ $protocol == "2" ];then
@@ -264,8 +264,8 @@ done
 fi
 blue "\n已确认转发主端口：$port\n"
 if [[ ${hysteria_protocol} == "udp" || $(cat /etc/hysteria/config.json 2>/dev/null | grep protocol | awk '{print $2}' | awk -F '"' '{ print $2}') == "udp" ]]; then
-green "\n经检测，当前选择的是udp协议，支持端口自动切换功能（默认每10秒切换）\n"
-readp "1. 继续使用默认单端口（回车默认）\n2. 使用范围端口的无缝自动切换功能\n请选择：" choose
+green "\n经检测，当前选择的是udp协议，可选择支持范围端口自动跳跃功能（默认每10秒切换）\n"
+readp "1. 继续使用默认单端口（回车默认）\n2. 使用范围端口（支持自动跳跃功能）\n请选择：" choos
 if [ -z "${choose}" ] || [ $choose == "1" ]; then
 echo
 elif [ $choose == "2" ]; then
@@ -652,7 +652,7 @@ hysteriashare
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 变更主端口或者开启多端口范围跳跃功能（将重置所有端口）\n6. 返回上层\n请选择：" choose
+readp "1. 切换IPV4/IPV6出站优先级\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ygkkkca路径上传自定义证书)\n4. 更换验证密码\n5. 变更主端口或者开启范围端口范围跳跃功能（将重置所有端口）\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
@@ -769,7 +769,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green " 1. 安装hysteria（必选）" 
 green " 2. 卸载hysteria"
 white "----------------------------------------------------------------------------------"
-green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、多端口动态复用）" 
+green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、范围端口动态复用）" 
 green " 4. 关闭、开启、重启hysteria"   
 green " 5. 更新hysteria安装脚本"  
 green " 6. 更新hysteria内核"
