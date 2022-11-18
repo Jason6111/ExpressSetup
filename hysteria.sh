@@ -280,9 +280,16 @@ netfilter-persistent save >/dev/null 2>&1
 }
 
 inspswd(){
-readp "hysteria设置验证密码（回车跳过为随机6位字符）：" pswd
+readp "设置hysteria验证密码，必须为6位字符以上（回车跳过为随机6位字符）：" pswd
 if [[ -z ${pswd} ]]; then
 pswd=`date +%s%N |md5sum | cut -c 1-6`
+else
+if [[ 6 -ge ${#pswd} ]]; then
+until [[ 6 -le ${#pswd} ]]
+do
+[[ 6 -ge ${#pswd} ]] && yellow "\n用户名必须为6位字符以上！请重新输入" && readp "\n设置hysteria密码：" pswd
+done
+fi
 fi
 blue "已确认验证密码：${pswd}\n"
 }
