@@ -395,7 +395,7 @@ uphysteriacore(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-wget -N https://raw.githubusercontent.com/HyNetwork/hysteria/master/install_server.sh && bash install_server.sh
+wget -N https://raw.githubusercontent.com/apernet/hysteria/master/install_server.sh && bash install_server.sh
 systemctl restart hysteria-server
 VERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
 blue "当前hysteria内核版本号：$VERSION"
