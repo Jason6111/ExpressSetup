@@ -261,16 +261,30 @@ fi
 blue "已确认伪装域名：${wym}\n"
 }
 insuser(){
-readp "设置naiveproxy用户名（回车跳过为随机6位字符）：" user
+readp "设置naiveproxy用户名，必须为6位字符以上（回车跳过为随机6位字符）：" user
 if [[ -z ${user} ]]; then
 user=`date +%s%N |md5sum | cut -c 1-6`
+else
+if [[ 6 -ge ${#user} ]]; then
+until [[ 6 -le ${#user} ]]
+do
+[[ 6 -ge ${#user} ]] && yellow "\n用户名必须为6位字符以上！请重新输入" && readp "\n设置naiveproxy用户名：" user
+done
+fi
 fi
 blue "已确认用户名：${user}\n"
 }
 inspswd(){
-readp "设置naiveproxy密码（回车跳过为随机10位字符）：" pswd
+readp "设置naiveproxy密码，必须为10位字符以上（回车跳过为随机10位字符）：" pswd
 if [[ -z ${pswd} ]]; then
 pswd=`date +%s%N |md5sum | cut -c 1-10`
+else
+if [[ 10 -ge ${#pswd} ]]; then
+until [[ 10 -le ${#pswd} ]]
+do
+[[ 10 -ge ${#pswd} ]] && yellow "\n用户名必须为10位字符以上！请重新输入" && readp "\n设置naiveproxy密码：" pswd
+done
+fi
 fi
 blue "已确认密码：${pswd}\n"
 }
