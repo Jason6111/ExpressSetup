@@ -200,7 +200,7 @@ fi
 
 inspr(){
 green "hysteria的传输协议选择如下:"
-readp "1. udp（支持多端口跳跃功能，回车默认）\n2. wechat-video\n3. faketcp（仅支持linux客户端且需要root权限）\n请选择：" protocol
+readp "1. udp（支持范围端口跳跃功能，回车默认）\n2. wechat-video\n3. faketcp（仅支持linux或者安卓客户端且需要root权限）\n请选择：" protocol
 if [ -z "${protocol}" ] || [ $protocol == "1" ];then
 hysteria_protocol="udp"
 elif [ $protocol == "2" ];then
@@ -776,7 +776,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green " 1. 安装hysteria（必选）" 
 green " 2. 卸载hysteria"
 white "----------------------------------------------------------------------------------"
-green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、范围端口动态复用）" 
+green " 3. 变更配置（IP优先级、传输协议、证书类型、验证密码、范围端口）" 
 green " 4. 关闭、开启、重启hysteria"   
 green " 5. 更新hysteria安装脚本"  
 green " 6. 更新hysteria内核"
