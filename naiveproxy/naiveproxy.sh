@@ -1,5 +1,5 @@
 #!/bin/bash
-naygV="22.11.12 V 1.8"
+naygV="22.11.20 V 2.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/naiveproxy.sh
 red='\033[0;31m'
@@ -253,13 +253,6 @@ done
 fi
 blue "已确认端口：$port\n"
 }
-inswym(){
-readp "设置伪装域名（回车默认）：" wym
-if [[ -z ${wym} ]]; then
-wym="www.xxxxx520.com"
-fi
-blue "已确认伪装域名：${wym}\n"
-}
 insuser(){
 readp "设置naiveproxy用户名，必须为6位字符以上（回车跳过为随机6位字符）：" user
 if [[ -z ${user} ]]; then
@@ -288,6 +281,17 @@ fi
 fi
 blue "已确认密码：${pswd}\n"
 }
+
+insweb(){
+readp "设置naiveproxy伪装网址，（回车跳过为 甬哥博客地址：ygkkk.blogspot.com ）：" web
+if [[ -z ${web} ]]; then
+naweb=www.xxxxx520.com
+else
+naweb=$web
+fi
+blue "已确认伪装网址：${naweb}\n"
+}
+
 insconfig(){
 readp "设置caddy2-naiveproxy监听端口[1-65535]（回车跳过为2000-65535之间的随机端口）：" caddyport
 if [[ -z $caddyport ]]; then
@@ -322,7 +326,7 @@ route {
    hide_via
    probe_resistance
   }
- reverse_proxy  $wym  {
+ reverse_proxy  $naweb {
    header_up  Host  {upstream_hostport}
    header_up  X-Forwarded-Host  {host}
   }
@@ -384,7 +388,7 @@ if [[ -z $(systemctl status caddy 2>/dev/null | grep -w active) && ! -f '/etc/ca
 red "未正常安装naiveproxy" && exit
 fi
 green "naiveproxy配置变更选择如下:"
-readp "1. 添加或删除多端口复用(每执行一次添加一个端口)\n2. 变更主端口\n3. 变更用户名\n4. 变更密码\n5. 重新申请证书或变更证书路径\n6. 返回上层\n请选择：" choose
+readp "1. 添加或删除多端口复用(每执行一次添加一个端口)\n2. 变更主端口\n3. 变更用户名\n4. 变更密码\n5. 重新申请证书或变更证书路径\n6. 变更伪装网页\n7. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 duoport
 elif [ $choose == "2" ];then
@@ -405,6 +409,8 @@ oldym=`cat /etc/caddy/Caddyfile 2>/dev/null | sed -n 4p | awk '{print $2}'| awk 
 sed -i "s/$oldym/${ym}/g" /etc/caddy/Caddyfile /etc/caddy/reCaddyfile /root/naive/URL.txt /root/naive/v2rayn.json
 sussnaiveproxy
 elif [ $choose == "6" ];then
+changeweb
+elif [ $choose == "7" ];then
 na
 else 
 red "请重新选择" && changeserv
@@ -455,6 +461,16 @@ blue "当前正在使用的主端口：$oldport1"
 echo
 insport
 sed -i "s/$oldport1/$port/g" /etc/caddy/Caddyfile /root/naive/v2rayn.json /root/naive/URL.txt
+sussnaiveproxy
+}
+
+changeweb(){
+oldweb=`cat /etc/caddy/Caddyfile 2>/dev/null | sed -n 13p | awk '{print $2}' | awk -F '//' '{print $2}'`
+echo
+blue "当前正在使用的伪装网址：$oldweb"
+echo
+insweb
+sed -i "s/$oldweb/$naweb/g" /etc/caddy/Caddyfile /etc/caddy/reCaddyfile
 sussnaiveproxy
 }
 
@@ -541,7 +557,7 @@ green "已安装naiveproxy，重装请先执行卸载功能" && exit
 fi
 rm -f /etc/systemd/system/caddy.service
 rm -rf /usr/bin/caddy /etc/caddy /root/naive /usr/bin/na
-inscaddynaive ; inscertificate ; insport ; inswym ; insuser ; inspswd ; insconfig
+inscaddynaive ; inscertificate ; insport ; insuser ; inspswd ; insweb ; insconfig
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
 green "naiveproxy服务启动成功"
 chmod +x /root/naiveproxy.sh 
@@ -571,7 +587,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green "  1. 安装naiveproxy（必选）" 
 green "  2. 卸载naiveproxy"
 white "----------------------------------------------------------------------------------"
-green "  3. 变更配置（多端口复用、主端口、用户名、密码、证书）" 
+green "  3. 变更配置（多端口复用、主端口、用户名、密码、证书、伪装网页）" 
 green "  4. 关闭、开启、重启naiveproxy"   
 green "  5. 更新naiveproxy安装脚本"
 green "  6. 更新naiveproxy内核版本"
