@@ -146,9 +146,9 @@ systemctl disable hysteria-server >/dev/null 2>&1
 rm -rf /usr/local/bin/hysteria /etc/hysteria /root/HY
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install_server.sh && bash install_server.sh
 if [[ -f '/usr/local/bin/hysteria' ]]; then
-blue "成功安装hysteria版本：$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')\n"
+blue "成功安装hysteria内核版本：$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')\n"
 else
-red "安装hysteria失败" && rm -rf install_server.sh && exit
+red "安装hysteria内核失败" && rm -rf install_server.sh && exit
 fi
 rm -rf install_server.sh
 }
