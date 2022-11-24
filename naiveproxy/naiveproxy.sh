@@ -241,14 +241,14 @@ insport(){
 readp "\n设置naiveproxy端口[1-65535]（回车跳过为2000-65535之间的随机端口）：" port
 if [[ -z $port ]]; then
 port=$(shuf -i 2000-65535 -n 1)
-until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]]
+until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义naiveproxy端口:" port
+[[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义naiveproxy端口:" port
 done
 else
-until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]]
+until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义naiveproxy端口:" port
+[[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$port") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义naiveproxy端口:" port
 done
 fi
 blue "已确认端口：$port\n"
@@ -283,7 +283,7 @@ blue "已确认密码：${pswd}\n"
 }
 
 insweb(){
-readp "设置naiveproxy伪装网址，（回车跳过为 甬哥博客地址：ygkkk.blogspot.com ）：" web
+readp "设置naiveproxy伪装网址，（回车跳过默认为 www.xxxxx520.com ）：" web
 if [[ -z ${web} ]]; then
 naweb=www.xxxxx520.com
 else
@@ -299,14 +299,14 @@ caddyport=$(shuf -i 2000-65535 -n 1)
 if [[ $caddyport == $port ]]; then
 yellow "\n端口被占用，请重新输入端口" && readp "自定义caddy2-naiveproxy监听端口:" caddyport
 fi
-until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$caddyport") ]]
+until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$caddyport") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$caddyport") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义caddy2-naiveproxy监听端口:" caddyport
+[[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$caddyport") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义caddy2-naiveproxy监听端口:" caddyport
 done
 else
-until [[ -z $(ss -ntlp | awk '{print $4}' | grep -w "$caddyport") ]]
+until [[ -z $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$caddyport") ]]
 do
-[[ -n $(ss -ntlp | awk '{print $4}' | grep -w "$caddyport") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义caddy2-naiveproxy监听端口:" caddyport
+[[ -n $(ss -ntlp | awk '{print $4}' | sed 's/.*://g' | grep -w "$caddyport") ]] && yellow "\n端口被占用，请重新输入端口" && readp "自定义caddy2-naiveproxy监听端口:" caddyport
 done
 fi
 blue "已确认端口：$caddyport\n"
