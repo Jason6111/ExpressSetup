@@ -170,6 +170,10 @@ xrayInstall() {
 wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh
 }
 
+mtp() {
+bash <(https://github.com/Jason6111/ExpressSetup/raw/main/mtp.sh)
+}
+
 zhuanfa() {
 echo "=============================================================="
 echo "选择机器"
@@ -198,6 +202,7 @@ green " 6.转发救机"
 green " 7.安装bbr"
 green " 8.一键Xray"
 green " 9.安装哪吒探针"
+green " 10.电报代理“
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white "VPS系统信息如下："
@@ -215,6 +220,7 @@ case "$Input" in
  7 ) bbrInstall;;
  8 ) xrayInstall;;
  9 ) nezhaianban;;
+ 10 ）mtp;;
  * ) exit 
 esac
 }
