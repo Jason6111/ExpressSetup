@@ -133,9 +133,9 @@ wgcfv4=$(curl -s4m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 }
 
 gengxin(){
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install.sh
-chmod +x /root/install.sh 
-ln -sf /root/install.sh /usr/bin/ES
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh
+chmod +x /root/ESinstall.sh 
+ln -sf /root/ESinstall.sh /usr/bin/ES
 green "install安装脚本升级成功" && ES
 }
 
@@ -164,7 +164,8 @@ systemctl restart x-ui
 }
 
 nezhamianban() {
-bash <(https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh && ./nezha.sh)
+curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh
+sudo ./nezha.sh
 }
 
 bbrInstall(){
@@ -222,7 +223,7 @@ case "$Input" in
  6 ) zhuanfa;;
  7 ) bbrInstall;;
  8 ) xrayInstall;;
- 9 ) nezhaianban;;
+ 9 ) nezhamianban;;
  10 ) TGInstall;;
  * ) exit 
 esac
