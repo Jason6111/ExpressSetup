@@ -239,7 +239,7 @@ case "$Input" in
  1 ) gengxin;;
  2 ) hysteria;;
  3 ) naiveproxy;;
- 3 ) tuic;;
+ 4 ) tuic;;
  5 ) nginx;;
  6 ) acme;;
  7 ) x-ui;;
