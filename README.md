@@ -7,14 +7,7 @@ wget -N https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/esinstall.sh && 
 ```
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh && bash esinstall.sh
 ```  
-一键hysteria
-```
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh && bash hysteria.sh
-```
-一键naiveproxy
-```
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh && bash naiveproxy.sh
-```
+
 
 
 ## 哪吒探针配置
