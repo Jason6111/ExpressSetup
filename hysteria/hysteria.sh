@@ -1,6 +1,6 @@
 #!/bin/bash
 hyygV="22.11.12 V 5.0"
-remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
+remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
 yellow='\033[0;33m'
@@ -144,7 +144,7 @@ fi
 systemctl stop hysteria-server >/dev/null 2>&1
 systemctl disable hysteria-server >/dev/null 2>&1
 rm -rf /usr/local/bin/hysteria /etc/hysteria /root/HY
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install_server.sh && bash install_server.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/install_server.sh && bash install_server.sh
 if [[ -f '/usr/local/bin/hysteria' ]]; then
 blue "成功安装hysteria内核版本：$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')\n"
 else
@@ -436,7 +436,7 @@ uphyyg(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh
 chmod +x /root/hysteria.sh 
 ln -sf /root/hysteria.sh /usr/bin/hy
 green "安装脚本升级成功" && hy
@@ -696,7 +696,7 @@ sed -i '/systemctl restart hysteria-server/d' /etc/crontab
 echo "0 4 * * * systemctl restart hysteria-server >/dev/null 2>&1" >> /etc/crontab
 chmod +x /root/hysteria.sh 
 ln -sf /root/hysteria.sh /usr/bin/hy
-wget -NP /root/HY https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/GetRoutes.py 
+wget -NP /root/HY https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/GetRoutes.py 
 python3 /root/HY/GetRoutes.py
 mv -f Country.mmdb routes.acl /root/HY/acl
 hysteriastatus
