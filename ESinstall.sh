@@ -1,6 +1,6 @@
 #!/bin/bash
 hyygV="22.11.28 V 1.0"
-remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install.sh | sed  -n 2p | cut -d '"' -f 2`
+remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/install.sh
 red='\033[0;31m'
 yellow='\033[0;33m'
@@ -164,20 +164,19 @@ systemctl restart x-ui
 }
 
 nezhamianban() {
-curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh
-sudo ./nezha.sh
+bash <(https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  -o nezha.sh && chmod +x nezha.sh && ./nezha.sh)
 }
 
 bbrInstall(){
-bash <(curl -L -s https://raw.githubusercontent.com/teddysun/across/master/bbr.sh)
+wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 
 xrayInstall() {
 wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh
 }
 
-mtp() {
-bash <(https://github.com/Jason6111/ExpressSetup/raw/main/mtp.sh)
+TGInstall() {
+bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 }
 
 zhuanfa() {
@@ -224,7 +223,7 @@ case "$Input" in
  7 ) bbrInstall;;
  8 ) xrayInstall;;
  9 ) nezhaianban;;
- 10 ）mtp;;
+ 10 ) TGInstall;;
  * ) exit 
 esac
 }
