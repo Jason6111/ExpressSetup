@@ -1,19 +1,15 @@
 # ExpressSetup
 国内脚本  
 ```
-bash <(curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/install.sh)
+wget -N curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/ESinstall.sh && bash ESinstall.sh
 ```
 国外脚本  
 ```
-bash <(curl -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install.sh)
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh && bash ESinstall.sh
 ```  
 一键hysteria
 ```
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh && bash hysteria.sh
-```
-一键TG
-```  
-bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 ```
 一键naiveproxy
 ```
