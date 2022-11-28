@@ -140,8 +140,8 @@ fi
 }
 
 ACMEstandaloneDNS(){
-readp "请输入解析完成的二级域名:" ym
-green "已输入的二级域名:$ym" && sleep 1
+readp "请输入解析完成的域名:" ym
+green "已输入的域名:$ym" && sleep 1
 checkacmeca
 domainIP=$(curl -s ipget.net/?ip="$ym")
 wro
