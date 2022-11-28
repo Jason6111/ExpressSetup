@@ -1,7 +1,7 @@
 # ExpressSetup
 国内脚本  
 ```
-wget -N curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/esinstall.sh && bash esinstall.sh
+wget -N https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/esinstall.sh && bash esinstall.sh
 ```
 国外脚本  
 ```
