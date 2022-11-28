@@ -126,6 +126,12 @@ systemctl disable apache2 >/dev/null 2>&1
 fi
 }
 
+installstatus(){
+wgcfv6=$(curl -s6m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2) 
+wgcfv4=$(curl -s4m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
+[[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]] && wgcf=$(green "未启用") || wgcf=$(green "启用中")
+}
+
 gengxin(){
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/install.sh
 chmod +x /root/install.sh 
@@ -190,6 +196,8 @@ echo "=============================================================="
 
 
 start_menu()
+installstatus
+clear
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 green " 1.更新脚本" 
 green " 2.安装nginx有宝塔的不用安装"
