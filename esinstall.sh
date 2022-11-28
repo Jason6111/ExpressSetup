@@ -180,6 +180,18 @@ TGInstall() {
 bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 }
 
+naiveproxy() {
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh && bash naiveproxy.sh
+}
+
+hysteria() {
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh && bash hysteria.sh
+}
+
+BT() {
+wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && sudo bash install.sh aapanel || wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && bash install.sh aapanel || yum install -y wget && wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh && bash install.sh aapanel
+}
+
 zhuanfa() {
 echo "=============================================================="
 echo "选择机器"
@@ -198,15 +210,18 @@ echo "=============================================================="
 start_menu(){
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 green " 1.更新脚本" 
-green " 2.安装nginx有宝塔的不用安装"
-green " 3.ssl证书(请先确保端口打开)"
-green " 4.安装x-ui"
-green " 5.安装x-ui并替换文件"
-green " 6.转发救机"
-green " 7.安装bbr"
-green " 8.一键Xray"
-green " 9.安装哪吒探针"
-green " 10.电报代理"
+green " 2.hysteria"
+green " 3.naiveproxy"
+green " 4.安装nginx有宝塔的不用安装"
+green " 5.ssl证书(请先确保端口打开)"
+green " 6.安装x-ui"
+green " 7.安装x-ui并替换文件"
+green " 8.转发救机"
+green " 9.安装bbr"
+green " 10.一键Xray"
+green " 11.安装哪吒探针"
+green " 12.电报代理"
+green " 13.宝塔国际版"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white "VPS系统信息如下："
@@ -216,15 +231,18 @@ echo
 readp "请输入数字:" Input
 case "$Input" in  
  1 ) gengxin;;
- 2 ) nginx;;
- 3 ) acme;;
- 4 ) x-ui;;
- 5 ) x-uimogai;; 
- 6 ) zhuanfa;;
- 7 ) bbrInstall;;
- 8 ) xrayInstall;;
- 9 ) nezhamianban;;
- 10 ) TGInstall;;
+ 2 ) hysteria;;
+ 3 ) naiveproxy;;
+ 4 ) nginx;;
+ 5 ) acme;;
+ 6 ) x-ui;;
+ 7 ) x-uimogai;; 
+ 8 ) zhuanfa;;
+ 9 ) bbrInstall;;
+ 10 ) xrayInstall;;
+ 11 ) nezhamianban;;
+ 12 ) TGInstall;;
+ 13 ) BT;;
  * ) exit 
 esac
 }
