@@ -149,7 +149,7 @@ mv caddy /usr/bin/
 inscaddynaive(){
 naygvsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version"`
 green "请选择安装或者更新 naiveproxy 内核方式:"
-readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前已编译到最新版本号： $naygvsion （快速安装，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
+readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前已编译到最新版本号： $naygvsion （快速安装，小白推荐，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
 if [ -z "$chcaddynaive" ] || [ $chcaddynaive == "1" ]; then
 insupdate
 cd /root
@@ -587,7 +587,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green "  1. 安装naiveproxy（必选）" 
 green "  2. 卸载naiveproxy"
 white "----------------------------------------------------------------------------------"
-green "  3. 变更配置（多端口复用、主端口、用户名、密码、证书、伪装网页）" 
+green "  3. 变更配置（独家多端口复用功能、主端口、用户名、密码、证书、伪装网页）" 
 green "  4. 关闭、开启、重启naiveproxy"   
 green "  5. 更新naiveproxy安装脚本"
 green "  6. 更新naiveproxy内核版本"
