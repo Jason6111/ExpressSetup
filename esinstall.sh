@@ -2,6 +2,7 @@
 hyygV="22.11.28 V 1.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
+ln -sf /root/esinstall.sh /usr/bin/es
 red='\033[0;31m'
 yellow='\033[0;33m'
 bblue='\033[0;34m'
