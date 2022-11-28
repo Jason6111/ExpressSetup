@@ -1,5 +1,5 @@
 #!/bin/bash
-hyygV="22.11.12 V 5.0"
+hyV="22.11.12 V 5.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
@@ -432,7 +432,7 @@ red "输入错误,请重新选择" && stclre
 fi
 }
 
-uphyyg(){
+uphy(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
@@ -661,7 +661,7 @@ hysteriashare
 
 changeserv(){
 green "hysteria配置变更选择如下:"
-readp "1. 切换IP出站优先级（四模式）\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ygkkkca路径上传自定义证书)\n4. 更换验证密码\n5. 变更主端口或者开启范围端口范围跳跃功能（将重置所有端口）\n6. 返回上层\n请选择：" choose
+readp "1. 切换IP出站优先级（四模式）\n2. 切换传输协议类型\n3. 切换证书类型(支持/root/ca路径上传自定义证书)\n4. 更换验证密码\n5. 变更主端口或者开启范围端口范围跳跃功能（将重置所有端口）\n6. 返回上层\n请选择：" choose
 if [ $choose == "1" ];then
 changeip
 elif [ $choose == "2" ];then
@@ -790,10 +790,10 @@ green " 10. 安装BBR+FQ加速（可选）"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
-if [ "${hyygV}" = "${remoteV}" ]; then
-echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyygV}${plain} ，已是最新版本\n"
+if [ "${hyV}" = "${remoteV}" ]; then
+echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyV}${plain} ，已是最新版本\n"
 else
-echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyygV}${plain}"
+echo -e "当前 hysteria 安装脚本版本号：${bblue}${hyV}${plain}"
 echo -e "检测到最新 hysteria 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择5进行更新\n"
 fi
 loVERSION="$(/usr/local/bin/hysteria -v | awk 'NR==1 {print $3}')"
@@ -816,7 +816,7 @@ case "$Input" in
  2 ) unins;;
  3 ) changeserv;;
  4 ) stclre;;
- 5 ) uphyyg;; 
+ 5 ) uphy;; 
  6 ) uphysteriacore;;
  7 ) hysteriashare;;
  8 ) acme;;
