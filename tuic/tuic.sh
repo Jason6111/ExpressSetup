@@ -1,6 +1,6 @@
 #!/bin/bash
 tuV="22.11.23 V 1.0"
-remoteV=`https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/tuic/tuic.sh | sed  -n 2p | cut -d '"' -f 2`
+remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/tuic/tuic.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/tuic.sh
 red='\033[0;31m'
 yellow='\033[0;33m'
