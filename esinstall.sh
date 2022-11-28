@@ -207,7 +207,6 @@ service apache2 stop >/dev/null 2>&1
 systemctl disable apache2 >/dev/null 2>&1
 fi
 green "关闭VPS防火墙、开放端口规则执行完毕"
-back
 }
 
 xrayInstall() {
