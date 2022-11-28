@@ -1,7 +1,7 @@
 #!/bin/bash
 hyygV="22.11.28 V 1.0"
-remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh | sed  -n 2p | cut -d '"' -f 2`
-chmod +x /root/ESinstall.sh
+remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
+chmod +x /root/esinstall.sh
 red='\033[0;31m'
 yellow='\033[0;33m'
 bblue='\033[0;34m'
@@ -133,10 +133,10 @@ wgcfv4=$(curl -s4m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 }
 
 gengxin(){
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh
-chmod +x /root/ESinstall.sh 
-ln -sf /root/ESinstall.sh /usr/bin/ES
-green "install安装脚本升级成功" && ES
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh
+chmod +x /root/esinstall.sh 
+ln -sf /root/esinstall.sh /usr/bin/es
+green "install安装脚本升级成功" && es
 }
 
 nginx(){
