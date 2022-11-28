@@ -389,7 +389,7 @@ status=$(white "tuic状态：  \c";red "未安装";white "WARP状态：  \c";eva
 fi
 }
 
-uptuic(){
+uptuicj(){
 if [[ -z $(systemctl status tuic 2>/dev/null | grep -w active) && ! -f '/etc/tuic/tuic.json' ]]; then
 red "未正常安装tuic" && exit
 fi
@@ -506,7 +506,7 @@ case "$Input" in
  2 ) unins;;
  3 ) changeserv;;
  4 ) stclre;;
- 5 ) uptuic;; 
+ 5 ) uptuicj;; 
  6 ) uptuic;;
  7 ) tuicshare;;
  8 ) acme;;
