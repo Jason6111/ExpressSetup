@@ -150,11 +150,22 @@ xrayInstall() {
 wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh
 }
 
+get_char(){
+SAVEDSTTY=`stty -g`
+stty -echo
+stty cbreak
+dd if=/dev/tty bs=1 count=1 2> /dev/null
+stty -raw
+stty echo
+stty $SAVEDSTTY
+}
+
+
 back(){
 white "------------------------------------------------------------------------------------------------"
 white " 回主菜单，请按任意键"
 white " 退出脚本，请按Ctrl+C"
-bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
+get_char && bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
 }
 
 TGInstall() {
