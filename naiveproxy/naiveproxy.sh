@@ -1,5 +1,5 @@
 #!/bin/bash
-naygV="22.11.20 V 2.0"
+naV="22.11.20 V 2.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/naiveproxy.sh
 red='\033[0;31m'
@@ -147,9 +147,9 @@ mv caddy /usr/bin/
 }
 
 inscaddynaive(){
-naygvsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version"`
+navsion=`curl -s "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/version"`
 green "请选择安装或者更新 naiveproxy 内核方式:"
-readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前已编译到最新版本号： $naygvsion （快速安装，小白推荐，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
+readp "1. 使用已编译好的 caddy2-naiveproxy 版本，当前已编译到最新版本号： $navsion （快速安装，小白推荐，回车默认）\n2. 自动编译最新 caddy2-naiveproxy 版本，当前官方最新版本号： $lastvsion （存在编译失败可能）\n请选择：" chcaddynaive
 if [ -z "$chcaddynaive" ] || [ $chcaddynaive == "1" ]; then
 insupdate
 cd /root
@@ -498,7 +498,7 @@ status=$(white "naiveproxy状态：\c";red "未安装";white "WARP状态：     
 fi
 }
 
-upnayg(){
+upna(){
 if [[ -z $(systemctl status caddy 2>/dev/null | grep -w active) && ! -f '/etc/caddy/Caddyfile' ]]; then
 red "未正常安装naiveproxy" && exit
 fi
@@ -599,16 +599,16 @@ green " 10. 安装BBR+FQ加速（可选）"
 green "  0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
-if [ "${naygV}" = "${remoteV}" ]; then
-echo -e "当前 naiveproxy 安装脚本版本号：${bblue}${naygV}${plain} ，已是最新版本\n"
+if [ "${naV}" = "${remoteV}" ]; then
+echo -e "当前 naiveproxy 安装脚本版本号：${bblue}${naV}${plain} ，已是最新版本\n"
 else
-echo -e "当前 naiveproxy 安装脚本版本号：${bblue}${naygV}${plain}"
+echo -e "当前 naiveproxy 安装脚本版本号：${bblue}${naV}${plain}"
 echo -e "检测到最新 naiveproxy 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择5进行更新\n"
 fi
-if [ "$ygvsion" = "$lastvsion" ]; then
-echo -e "当前 naiveproxy 已安装内核版本号：${bblue}${ygvsion}${plain} ，已是官方最新版本"
+if [ "$vsion" = "$lastvsion" ]; then
+echo -e "当前 naiveproxy 已安装内核版本号：${bblue}${vsion}${plain} ，已是官方最新版本"
 else
-echo -e "当前 naiveproxy 已安装内核版本号：${bblue}${ygvsion}${plain}"
+echo -e "当前 naiveproxy 已安装内核版本号：${bblue}${vsion}${plain}"
 echo -e "检测到最新 naiveproxy 内核版本号：${yellow}${lastvsion}${plain} ，可选择6进行更新"
 fi
 fi
@@ -623,7 +623,7 @@ case "$Input" in
  2 ) unins;;
  3 ) changeserv;;
  4 ) stclre;;
- 5 ) upnayg;; 
+ 5 ) upna;; 
  6 ) upnaive;;
  7 ) naiveproxyshare;;
  8 ) acme;;
@@ -635,6 +635,6 @@ esac
 if [ $# == 0 ]; then
 start
 lastvsion=v`curl -Ls https://data.jsdelivr.com/v1/package/gh/klzgrad/naiveproxy | sed -n 4p | tr -d ',"' | awk '{print $1}'`
-ygvsion=`cat /etc/caddy/version 2>/dev/null`
+vsion=`cat /etc/caddy/version 2>/dev/null`
 start_menu
 fi
