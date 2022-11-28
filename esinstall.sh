@@ -181,6 +181,10 @@ TGInstall() {
 bash <(curl -sSL "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/mtp.sh")
 }
 
+tuic() {
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/tuic/tuic.sh && bash tuic.sh
+}
+
 naiveproxy() {
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/naiveproxy/naiveproxy.sh && bash naiveproxy.sh
 }
@@ -213,16 +217,17 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green " 1.更新脚本" 
 green " 2.hysteria"
 green " 3.naiveproxy"
-green " 4.安装nginx有宝塔的不用安装"
-green " 5.ssl证书(请先确保端口打开)"
-green " 6.安装x-ui"
-green " 7.安装x-ui并替换文件"
-green " 8.转发救机"
-green " 9.安装bbr"
-green " 10.一键Xray"
-green " 11.安装哪吒探针"
-green " 12.电报代理"
-green " 13.宝塔国际版"
+green " 4.tuic"
+green " 5.安装nginx有宝塔的不用安装"
+green " 6.ssl证书(请先确保端口打开)"
+green " 7.安装x-ui"
+green " 8.安装x-ui并替换文件"
+green " 9.转发救机"
+green " 10.安装bbr"
+green " 11.一键Xray"
+green " 12.安装哪吒探针"
+green " 13.电报代理"
+green " 14.宝塔国际版"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white "VPS系统信息如下："
@@ -234,16 +239,17 @@ case "$Input" in
  1 ) gengxin;;
  2 ) hysteria;;
  3 ) naiveproxy;;
- 4 ) nginx;;
- 5 ) acme;;
- 6 ) x-ui;;
- 7 ) x-uimogai;; 
- 8 ) zhuanfa;;
- 9 ) bbrInstall;;
- 10 ) xrayInstall;;
- 11 ) nezhamianban;;
- 12 ) TGInstall;;
- 13 ) BT;;
+ 3 ) tuic;;
+ 5 ) nginx;;
+ 6 ) acme;;
+ 7 ) x-ui;;
+ 8 ) x-uimogai;; 
+ 9 ) zhuanfa;;
+ 10 ) bbrInstall;;
+ 11 ) xrayInstall;;
+ 12 ) nezhamianban;;
+ 13 ) TGInstall;;
+ 14 ) BT;;
  * ) exit 
 esac
 }
