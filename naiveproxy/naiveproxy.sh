@@ -481,7 +481,7 @@ cfwarp(){
 wget -N --no-check-certificate https://gitlab.com/rwkgyg/cfwarp/raw/main/CFwarp.sh && bash CFwarp.sh
 }
 bbr(){
-bash <(curl -L -s https://raw.githubusercontent.com/teddysun/across/master/bbr.sh)
+wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 
 naiveproxystatus(){
