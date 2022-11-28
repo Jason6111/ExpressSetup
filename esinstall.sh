@@ -13,7 +13,7 @@ green(){ echo -e "\033[32m\033[01m$1\033[0m";}
 yellow(){ echo -e "\033[33m\033[01m$1\033[0m";}
 white(){ echo -e "\033[37m\033[01m$1\033[0m";}
 readp(){ read -p "$(yellow "$1")" $2;}
-[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit
+[[ $EUID -ne 0 ]] && yellow "请以root模式运行脚本" && exit 1
 yellow " 请稍等3秒……正在扫描vps类型及参数中……"
 if [[ -f /etc/redhat-release ]]; then
 release="Centos"
@@ -30,8 +30,12 @@ release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
 else 
-red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit
+red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit 1
 fi
+
+[[ $(type -P yum) ]] && yumapt='yum -y' || yumapt='apt -y'
+[[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
+[[ $(type -P kmod) ]] || $yumapt install kmod
 vsid=`grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1`
 sys(){
 [ -f /etc/os-release ] && grep -i pretty_name /etc/os-release | cut -d \" -f2 && return
@@ -39,19 +43,24 @@ sys(){
 [ -f /etc/redhat-release ] && awk '{print $0}' /etc/redhat-release && return;}
 op=`sys`
 version=`uname -r | awk -F "-" '{print $1}'`
-main=`uname  -r | awk -F . '{print $1}'`
+main=`uname  -r | awk -F . '{print $1 }'`
 minor=`uname -r | awk -F . '{print $2}'`
-
-bit=`uname -m`
-if [[ $bit = x86_64 ]]; then
-cpu=amd64
-elif [[ $bit = aarch64 ]]; then
-cpu=arm64
-elif [[ $bit = s390x ]]; then
-cpu=s390x
+uname -m | grep -q -E -i "aarch" && cpu=ARM64 || cpu=AMD64
+vi=`systemd-detect-virt`
+if [[ -n $(sysctl net.ipv4.tcp_congestion_control 2>/dev/null | awk -F ' ' '{print $3}') ]]; then
+bbr=`sysctl net.ipv4.tcp_congestion_control | awk -F ' ' '{print $3}'`
+elif [[ -n $(ping 10.0.0.2 -c 2 | grep ttl) ]]; then
+bbr="openvz版bbr-plus"
 else
-red "VPS的CPU架构为$bit 脚本不支持当前CPU架构，请使用amd64或arm64架构的CPU运行脚本" && exit
+bbr="暂不支持显示"
 fi
+v46=`curl -s https://ip.gs -k`
+if [[ $v46 =~ '.' ]]; then
+ip="$v46（IPV4优先）" 
+else
+ip="$v46（IPV6优先）"
+fi
+
 vi=`systemd-detect-virt`
 rm -rf /etc/localtime
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -169,8 +178,36 @@ curl -L https://raw.githubusercontent.com/naiba/nezha/master/script/install.sh  
 sudo ./nezha.sh
 }
 
+root(){
+bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/root.sh)
+}
+
+
 bbrInstall(){
 wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+}
+
+opport(){
+systemctl stop firewalld.service >/dev/null 2>&1
+systemctl disable firewalld.service >/dev/null 2>&1
+setenforce 0 >/dev/null 2>&1
+ufw disable >/dev/null 2>&1
+iptables -P INPUT ACCEPT >/dev/null 2>&1
+iptables -P FORWARD ACCEPT >/dev/null 2>&1
+iptables -P OUTPUT ACCEPT >/dev/null 2>&1
+iptables -t nat -F >/dev/null 2>&1
+iptables -t mangle -F >/dev/null 2>&1
+iptables -F >/dev/null 2>&1
+iptables -X >/dev/null 2>&1
+netfilter-persistent save >/dev/null 2>&1
+if [[ -n $(apachectl -v 2>/dev/null) ]]; then
+systemctl stop httpd.service >/dev/null 2>&1
+systemctl disable httpd.service >/dev/null 2>&1
+service apache2 stop >/dev/null 2>&1
+systemctl disable apache2 >/dev/null 2>&1
+fi
+green "关闭VPS防火墙、开放端口规则执行完毕"
+back
 }
 
 xrayInstall() {
@@ -228,11 +265,17 @@ green " 11.一键Xray"
 green " 12.安装哪吒探针"
 green " 13.电报代理"
 green " 14.宝塔国际版"
+green " 15.宝塔国际版"
+green " 16. VPS一键root脚本、更改root密码 "
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-white "VPS系统信息如下："
-white "操作系统:     $(blue "$op")" && white "内核版本:     $(blue "$version")" && white "CPU架构 :     $(blue "$cpu")" && white "虚拟化类型:   $(blue "$vi")"
-white "$status"
+white " VPS系统信息如下："
+white " 操作系统      : $(blue "$op")" 
+white " 内核版本      : $(blue "$version")" 
+white " CPU架构       : $(blue "$cpu")" 
+white " 虚拟化类型    : $(blue "$vi")" 
+white " TCP加速算法   : $(blue "$bbr")" 
+white " 本地IP优先级  : $(blue "$ip")"       
 echo
 readp "请输入数字:" Input
 case "$Input" in  
@@ -250,6 +293,8 @@ case "$Input" in
  12 ) nezhamianban;;
  13 ) TGInstall;;
  14 ) BT;;
+ 15 ) opport;;
+ 16 ) root;;
  * ) exit 
 esac
 }
