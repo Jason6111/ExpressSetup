@@ -180,6 +180,7 @@ sudo ./nezha.sh
 
 root(){
 bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/root.sh)
+back
 }
 
 
@@ -207,10 +208,18 @@ service apache2 stop >/dev/null 2>&1
 systemctl disable apache2 >/dev/null 2>&1
 fi
 green "关闭VPS防火墙、开放端口规则执行完毕"
+back
 }
 
 xrayInstall() {
 wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh
+}
+
+back(){
+white "------------------------------------------------------------------------------------------------"
+white " 回主菜单，请按任意键"
+white " 退出脚本，请按Ctrl+C"
+get_char && bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
 }
 
 TGInstall() {
@@ -249,6 +258,8 @@ echo "=============================================================="
 
 
 start_menu(){
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+white " 再次进入输入 es"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 green " 1.更新脚本" 
 green " 2.hysteria"
