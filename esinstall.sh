@@ -154,7 +154,7 @@ back(){
 white "------------------------------------------------------------------------------------------------"
 white " 回主菜单，请按任意键"
 white " 退出脚本，请按Ctrl+C"
-get_char && bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
 }
 
 TGInstall() {
