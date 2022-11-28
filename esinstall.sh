@@ -185,11 +185,13 @@ wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/h
 }
 
 BT() {
-if cat /etc/issue | grep -q -E -i "ubuntu"; then
+if [[ -f /etc/redhat-release ]]; then
+yum install -y wget && wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh && bash install.sh aapanel
+elif cat /etc/issue | grep -q -E -i "ubuntu"; then
 wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && sudo bash install.sh aapanel
 elif cat /etc/issue | grep -q -E -i "debian"; then
 wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && bash install.sh aapanel
-elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat|Kernel"; then
+elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
 yum install -y wget && wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh && bash install.sh aapanel
 else 
 red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit 1
