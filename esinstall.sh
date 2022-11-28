@@ -252,6 +252,5 @@ case "$Input" in
 esac
 }
 if [ $# == 0 ]; then
-start
 start_menu
 fi
