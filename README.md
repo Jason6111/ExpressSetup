@@ -1,11 +1,11 @@
 # ExpressSetup
 国内脚本  
 ```
-wget -N curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/ESinstall.sh && bash ESinstall.sh
+wget -N curl -s https://cdn.jsdelivr.net/gh/Jason6111/ExpressSetup@main/esinstall.sh && bash esinstall.sh
 ```
 国外脚本  
 ```
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/ESinstall.sh && bash ESinstall.sh
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh && bash esinstall.sh
 ```  
 一键hysteria
 ```
