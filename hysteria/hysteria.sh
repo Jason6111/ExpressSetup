@@ -265,7 +265,7 @@ fi
 blue "\n已确认转发主端口：$port\n"
 if [[ ${hysteria_protocol} == "udp" || $(cat /etc/hysteria/config.json 2>/dev/null | grep protocol | awk '{print $2}' | awk -F '"' '{ print $2}') == "udp" ]]; then
 green "\n经检测，当前选择的是udp协议，可选择支持范围端口自动跳跃功能（默认每10秒切换）\n"
-readp "1. 继续使用默认单端口（回车默认）\n2. 使用范围端口（支持自动跳跃功能）\n请选择：" choos
+readp "1. 继续使用默认单端口（回车默认）\n2. 使用范围端口（支持自动跳跃功能）\n请选择：" choose
 if [ -z "${choose}" ] || [ $choose == "1" ]; then
 echo
 elif [ $choose == "2" ]; then
