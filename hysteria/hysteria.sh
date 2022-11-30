@@ -679,10 +679,6 @@ readp "1. 直接使用root/ca目录下申请过证书（回车默认）\n2. 删�
 if [ -z "${certacme}" ] || [ $certacme == "1" ]; then
 ym=$(cat /root/ca/ca.log)
 blue "检测到的域名：$ym ，已直接引用\n"
-else
-green "无acme脚本申请证书记录，当前为自定义证书模式"
-readp "请输入已解析完成的域名:" ym
-blue "输入的域名：$ym，已直接引用\n"
 elif [ $certacme == "2" ]; then
 curl https://get.acme.sh | sh
 bash /root/.acme.sh/acme.sh --uninstall
