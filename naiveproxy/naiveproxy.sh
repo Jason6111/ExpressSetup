@@ -341,8 +341,8 @@ cat <<EOF > /root/naive/v2rayn.json
 EOF
 cat << EOF >/etc/systemd/system/caddy.service
 [Unit]
-Description=Caddy
-Documentation=https://caddyserver.com/docs/
+Description=Caddy2-naiveproxy
+Documentation=https://github.com/Jason6111/ExpressSetup/tree/main/naiveproxy
 After=network.target network-online.target
 Requires=network-online.target
 [Service]
