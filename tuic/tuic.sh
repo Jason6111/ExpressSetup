@@ -281,7 +281,7 @@ EOF
 cat << EOF >/etc/systemd/system/tuic.service
 [Unit]
 Description=TUIC
-Documentation=https://github.com/EAimTY/tuic
+Documentation=https://github.com/Jason6111/ExpressSetup/tree/main/tuic
 After=network.target
 [Service]
 User=root
