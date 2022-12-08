@@ -1,5 +1,5 @@
 #!/bin/bash
-hyV="22.11.30 V 5.5"
+hyV="22.12.8 V 5.6"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/hysteria/hysteria.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/hysteria.sh
 red='\033[0;31m'
@@ -104,7 +104,7 @@ if [[ -z $(systemctl status netfilter-persistent 2>/dev/null | grep -w active) ]
 $yumapt update;$yumapt install netfilter-persistent
 fi 
 if [[ -z $(grep 'DiG 9' /etc/hosts) ]]; then
-v4=$(curl -s4m5 https://ip.gs -k)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 if [ -z $v4 ]; then
 echo -e nameserver 2a01:4f8:c2c:123f::1 > /etc/resolv.conf
 fi
@@ -299,7 +299,7 @@ fi
 
 insconfig(){
 green "设置配置文件中……，稍等5秒"
-v4=$(curl -s4m5 https://ip.gs -k)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 [[ -z $v4 ]] && rpip=64 || rpip=46
 cat <<EOF > /etc/hysteria/config.json
 {
@@ -319,7 +319,7 @@ cat <<EOF > /etc/hysteria/config.json
 EOF
 
 sureipadress(){
-ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
+ip=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p) || ip=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 [[ -z $(echo $ip | grep ":") ]] && ymip=$ip || ymip="[$ip]" 
 }
 
@@ -611,10 +611,10 @@ red "未正常安装hysteria!" && exit
 fi
 certclient(){
 sureipadress(){
-ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
+ip=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p) || ip=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 certificate=`cat /etc/hysteria/config.json 2>/dev/null | grep cert | awk '{print $2}' | awk -F '"' '{ print $2}'`
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
-if [[ -n $(curl -s6m5 https://ip.gs -k) ]]; then
+if [[ -n $(curl -s6m6 ip.p3terx.com -k | sed -n 1p) ]]; then
 oldserver=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}' | grep -o '\[.*\]' | cut -d '[' -f2|cut -d ']' -f1`
 else
 oldserver=`cat /root/HY/acl/v2rayn.json 2>/dev/null | grep -w server | awk '{print $2}' | awk -F '"' '{ print $2}'| cut -d ':' -f 1`
@@ -725,19 +725,19 @@ red "输入错误，请重新选择" && changecertificate
 fi
 
 sureipadress(){
-if [[ $certificate = '/etc/hysteria/cert.crt' && -n $(curl -s6m5 https://ip.gs -k) ]]; then
+if [[ $certificate = '/etc/hysteria/cert.crt' && -n $(curl -s6m6 ip.p3terx.com -k | sed -n 1p) ]]; then
 sed -i "2s/\[$oldserver\]/${ymip}/g" /root/HY/acl/v2rayn.json
 sed -i "s/\[$oldserver\]/${ymip}/g" /root/HY/URL.txt
 sed -i "23s/$oldserver/${ymip}/g" /root/HY/acl/Cmeta-hy.yaml
-elif [[ $certificate = '/root/ca/cert.crt' && -n $(curl -s6m5 https://ip.gs -k) ]]; then
+elif [[ $certificate = '/root/ca/cert.crt' && -n $(curl -s6m6 ip.p3terx.com -k | sed -n 1p) ]]; then
 sed -i "2s/$oldserver/\[${ymip}\]/g" /root/HY/acl/v2rayn.json
 sed -i "s/$oldserver/\[${ymip}\]/" /root/HY/URL.txt
 sed -i "23s/$oldserver/${ymip}/g" /root/HY/acl/Cmeta-hy.yaml
-elif [[ $certificate = '/root/ca/cert.crt' && -z $(curl -s6m5 https://ip.gs -k) ]]; then
+elif [[ $certificate = '/root/ca/cert.crt' && -z $(curl -s6m6 ip.p3terx.com -k | sed -n 1p) ]]; then
 sed -i "2s/$oldserver/${ymip}/g" /root/HY/acl/v2rayn.json
 sed -i "s/$oldserver/${ymip}/" /root/HY/URL.txt
 sed -i "23s/$oldserver/${ymip}/g" /root/HY/acl/Cmeta-hy.yaml
-elif [[ $certificate = '/etc/hysteria/cert.crt' && -z $(curl -s6m5 https://ip.gs -k) ]]; then
+elif [[ $certificate = '/etc/hysteria/cert.crt' && -z $(curl -s6m6 ip.p3terx.com -k | sed -n 1p) ]]; then
 sed -i "2s/$oldserver/${ymip}/g" /root/HY/acl/v2rayn.json
 sed -i "s/$oldserver/${ymip}/g" /root/HY/URL.txt
 sed -i "23s/$oldserver/${ymip}/g" /root/HY/acl/Cmeta-hy.yaml
@@ -757,8 +757,8 @@ changeip(){
 if [[ -z $(systemctl status hysteria-server 2>/dev/null | grep -w active) || ! -f '/etc/hysteria/config.json' ]]; then
 red "未正常安装hysteria!" && exit
 fi
-ipv6=$(curl -s6m5 https://ip.gs -k) 
-ipv4=$(curl -s4m5 https://ip.gs -k)
+ipv6=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p) 
+ipv4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 chip(){
 rpip=`cat /etc/hysteria/config.json 2>/dev/null | grep resolve_preference | awk '{print $2}' | awk -F '"' '{ print $2}'`
 sed -i "4s/$rpip/$rrpip/g" /etc/hysteria/config.json
@@ -863,7 +863,7 @@ white "$status\n"
 sureipadress(){
 certificate=`cat /etc/hysteria/config.json 2>/dev/null | grep cert | awk '{print $2}' | awk -F '"' '{ print $2}'`
 if [[ $certificate = '/etc/hysteria/cert.crt' ]]; then
-ip=$(curl -s4m5 https://ip.gs -k) || ip=$(curl -s6m5 https://ip.gs -k)
+ip=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p) || ip=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 [[ -z $(echo $ip | grep ":") ]] && ymip=$ip || ymip="[$ip]"
 else
 ymip=$(cat /root/ca/ca.log)
@@ -895,8 +895,8 @@ wgcfv4=$(curl -s4m5 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cu
 if [[ -n $(systemctl status hysteria-server 2>/dev/null | grep -w active) && -f '/etc/hysteria/config.json' ]]; then
 noprotocol=`cat /etc/hysteria/config.json 2>/dev/null | grep protocol | awk '{print $2}' | awk -F '"' '{ print $2}'`
 rpip=`cat /etc/hysteria/config.json 2>/dev/null | grep resolve_preference | awk '{print $2}' | awk -F '"' '{ print $2}'`
-v4=$(curl -s4m5 https://ip.gs -k)
-v6=$(curl -s6m5 https://ip.gs -k)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
+v6=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
 [[ -z $v4 ]] && showv4='IPV4地址丢失，请切换至IPV6或者重装hysteria' || showv4=$v4
 [[ -z $v6 ]] && showv6='IPV6地址丢失，请切换至IPV4或者重装hysteria' || showv6=$v6
 if [[ $rpip = 64 ]]; then
