@@ -54,7 +54,7 @@ bbr="openvz版bbr-plus"
 else
 bbr="暂不支持显示"
 fi
-v46=`curl -s https://ip.gs -k`
+v46=`curl -s ip.p3terx.com -k | sed -n 1p`
 if [[ $v46 =~ '.' ]]; then
 ip="$v46（IPV4优先）" 
 else
