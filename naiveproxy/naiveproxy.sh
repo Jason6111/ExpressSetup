@@ -95,7 +95,7 @@ fi
 [[ ! $(type -P sysctl) ]] && ($yumapt update;$yumapt install procps)
 [[ ! $(type -P qrencode) ]] && ($yumapt update;$yumapt install qrencode)
 if [[ -z $(grep 'DiG 9' /etc/hosts) ]]; then
-v4=$(curl -s4m5 https://ip.gs -k)
+v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
 if [ -z $v4 ]; then
 echo -e nameserver 2a01:4f8:c2c:123f::1 > /etc/resolv.conf
 fi
