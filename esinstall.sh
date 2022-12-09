@@ -1,5 +1,4 @@
 #!/bin/bash
-esV="22.12.9 V 1.2"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -262,14 +261,6 @@ green " 16.VPS一键root脚本、更改root密码"
 green " 17.更改VPS本地IP优先级"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-if [[ -n $(systemctl status es 2>/dev/null | grep -w active) && -f '/etc/es/es.json' ]]; then
-if [ "${esV}" = "${remoteV}" ]; then
-echo -e "当前 es 安装脚本版本号：${bblue}${tuygV}${plain} ，已是最新版本\n"
-else
-echo -e "当前 es 安装脚本版本号：${bblue}${esV}${plain}"
-echo -e "检测到最新 es 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择1进行更新\n"
-fi
-fi
 white " VPS系统信息如下："
 white " 操作系统      : $(blue "$op")" 
 white " 内核版本      : $(blue "$version")" 
