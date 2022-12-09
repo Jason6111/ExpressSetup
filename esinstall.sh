@@ -1,5 +1,5 @@
 #!/bin/bash
-hyygV="22.11.28 V 1.0"
+hyygV="22.12.9 V 1.1"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -118,6 +118,33 @@ bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/
 back
 }
 
+v4v6(){
+v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+[[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
+ab="1.设置IPV4优先\n2.设置IPV6优先\n3.恢复系统默认优先\n0.返回上一层\n 请选择："
+readp "$ab" cd
+case "$cd" in 
+1 )
+[[ -e /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
+v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+[[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
+back;;
+2 )
+[[ -e /etc/gai.conf ]] && grep -qE '^ *label 2002::/16   2' /etc/gai.conf || echo 'label 2002::/16   2' >> /etc/gai.conf
+sed -i '/^precedence ::ffff:0:0\/96  100/d' /etc/gai.conf
+v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+[[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
+back;;
+3 )
+sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
+v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+[[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
+back;;
+0 ) 
+bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
+esac
+}
 
 bbrInstall(){
 wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
@@ -231,7 +258,8 @@ green " 12.安装哪吒探针"
 green " 13.电报代理"
 green " 14.宝塔国际版"
 green " 15.关闭VPS防火墙、开放端口规则"
-green " 16. VPS一键root脚本、更改root密码 "
+green " 16.VPS一键root脚本、更改root密码"
+green " 17.更改VPS本地IP优先级"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
@@ -260,6 +288,7 @@ case "$Input" in
  14 ) BT;;
  15 ) opport;;
  16 ) root;;
+ 17 ) v4v6;;
  * ) exit 
 esac
 }
