@@ -129,6 +129,7 @@ gengxin() {
     echo -e "当前已是最新版本[ ${es_new_V} ] !"
     sleep 2s && ./esinstall.sh
   fi
+  ln -sf /root/esinstall.sh /usr/bin/es
 }
 
 v4v6(){
