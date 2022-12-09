@@ -1,4 +1,5 @@
 #!/bin/bash
+esV="22.12.9"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -115,6 +116,26 @@ sudo ./nezha.sh
 root(){
 bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/root.sh)
 back
+}
+
+Update_Shell() {
+  echo -e "当前版本为 [ ${esV} ]，开始检测最新版本..."
+  es_new_V=$(wget -qO- "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh" | grep 'esV="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1)
+  [[ -z ${es_new_V} ]] && echo -e "${Error} 检测最新版本失败 !" && start_menu
+  if [ ${es_new_V} != ${esV} ]; then
+    echo -e "发现新版本[ ${es_new_V} ]，是否更新？[Y/n]"
+    read -p "(默认: y):" yn
+    [[ -z "${yn}" ]] && yn="y"
+    if [[ ${yn} == [Yy] ]]; then
+      wget -N "https://${github}/esinstall.sh" && chmod +x esinstall.sh && ./esinstall.sh
+      echo -e "脚本已更新为最新版本[ ${es_new_V} ] !"
+    else
+      echo && echo "	已取消..." && echo
+    fi
+  else
+    echo -e "当前已是最新版本[ ${es_new_V} ] !"
+    sleep 2s && ./esinstall.sh
+  fi
 }
 
 v4v6(){
@@ -240,8 +261,6 @@ echo "=============================================================="
 
 start_menu(){
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-white " 再次进入输入 es"
-red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 green " 1.更新脚本" 
 green " 2.hysteria"
 green " 3.naiveproxy"
@@ -260,6 +279,9 @@ green " 15.关闭VPS防火墙、开放端口规则"
 green " 16.VPS一键root脚本、更改root密码"
 green " 17.更改VPS本地IP优先级"
 green " 0. 退出脚本"
+red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${esV}]${Font_color_suffix} 
+white " 再次进入输入 es"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
 white " 操作系统      : $(blue "$op")" 
