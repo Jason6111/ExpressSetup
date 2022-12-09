@@ -120,7 +120,7 @@ gengxin() {
     read -p "(默认: y):" yn
     [[ -z "${yn}" ]] && yn="y"
     if [[ ${yn} == [Yy] ]]; then
-      wget -N "https://${github}/esinstall.sh" && chmod +x esinstall.sh && ./esinstall.sh
+      wget -N "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh" && chmod +x esinstall.sh && ./esinstall.sh
       echo -e "脚本已更新为最新版本[ ${es_new_V} ] !"
     else
       echo && echo "	已取消..." && echo
