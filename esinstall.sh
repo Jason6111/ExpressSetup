@@ -111,12 +111,12 @@ bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/
 back
 }
 
-gengxin() {
- wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh
- chmod +x /root/esinstall.sh 
- ln -sf /root/esinstall.sh /usr/bin/es
- green "快速安装脚本升级成功" && es
- }
+gengxin(){
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh
+chmod +x /root/esinstall.sh 
+ln -sf /root/esinstall.sh /usr/bin/es
+green "快速安装脚本升级成功" && es
+}
 
 v4v6(){
 v46=`curl -s api64.ipify.org -k`
