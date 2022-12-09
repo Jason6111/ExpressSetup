@@ -54,7 +54,7 @@ bbr="openvz版bbr-plus"
 else
 bbr="暂不支持显示"
 fi
-v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+v46=`api64.ipify.org -k`
 if [[ $v46 =~ '.' ]]; then
 ip="$v46（IPV4优先）" 
 else
@@ -119,7 +119,7 @@ back
 }
 
 v4v6(){
-v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 ab="1.设置IPV4优先\n2.设置IPV6优先\n3.恢复系统默认优先\n0.返回上一层\n 请选择："
 readp "$ab" cd
@@ -127,18 +127,18 @@ case "$cd" in
 1 )
 [[ -e /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
 sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
-v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 back;;
 2 )
 [[ -e /etc/gai.conf ]] && grep -qE '^ *label 2002::/16   2' /etc/gai.conf || echo 'label 2002::/16   2' >> /etc/gai.conf
 sed -i '/^precedence ::ffff:0:0\/96  100/d' /etc/gai.conf
-v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 back;;
 3 )
 sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.conf
-v46=`curl -s ip.p3terx.com -k | sed -n 1p`
+v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 back;;
 0 ) 
