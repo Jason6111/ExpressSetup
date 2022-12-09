@@ -84,7 +84,7 @@ fi
 [[ $(type -P curl) ]] || (yellow "检测到curl未安装，升级安装中" && $yumapt update;$yumapt install curl)
 [[ ! $(type -P sysctl) ]] && ($yumapt update;$yumapt install procps)
 if [[ -z $(grep 'DiG 9' /etc/hosts) ]]; then
-v4=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p)
+v4=$(curl -s4m6 api64.ipify.org -k)
 if [ -z $v4 ]; then
 echo -e nameserver 2a01:4f8:c2c:123f::1 > /etc/resolv.conf
 fi
@@ -228,7 +228,7 @@ blue "已确认令牌码Token：${pswd}\n"
 insconfig(){
 green "设置tuic的配置文件、服务进程……\n"
 sureipadress(){
-ip=$(curl -s4m6 ip.p3terx.com -k | sed -n 1p) || ip=$(curl -s6m6 ip.p3terx.com -k | sed -n 1p)
+ip=$(curl -s4m6 api64.ipify.org -k) || ip=$(curl -s6m6 api64.ipify.org -k)
 }
 wgcfgo
 mkdir /etc/tuic >/dev/null 2>&1
