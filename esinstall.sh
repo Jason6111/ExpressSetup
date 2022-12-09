@@ -77,13 +77,6 @@ systemctl start wg-quick@wgcf >/dev/null 2>&1
 fi
 }
 
-gengxin(){
-wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh
-chmod +x /root/esinstall.sh 
-ln -sf /root/esinstall.sh /usr/bin/es
-green "install安装脚本升级成功" && es
-}
-
 nginx(){
 yum update -y || apt update -y
 yum install nginx curl wget -y || apt install nginx curl wget -y
@@ -118,7 +111,7 @@ bash <(curl -L -s https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/
 back
 }
 
-Update_Shell() {
+gengxin() {
   echo -e "当前版本为 [ ${esV} ]，开始检测最新版本..."
   es_new_V=$(wget -qO- "https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh" | grep 'esV="' | awk -F "=" '{print $NF}' | sed 's/\"//g' | head -1)
   [[ -z ${es_new_V} ]] && echo -e "${Error} 检测最新版本失败 !" && start_menu
