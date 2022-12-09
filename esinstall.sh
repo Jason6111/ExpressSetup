@@ -269,7 +269,7 @@ else
 echo -e "当前 es 安装脚本版本号：${bblue}${esV}${plain}"
 echo -e "检测到最新 es 安装脚本版本号：${yellow}${remoteV}${plain} ，可选择1进行更新\n"
 fi
-
+fi
 white " VPS系统信息如下："
 white " 操作系统      : $(blue "$op")" 
 white " 内核版本      : $(blue "$version")" 
