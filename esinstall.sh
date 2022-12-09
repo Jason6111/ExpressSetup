@@ -54,7 +54,7 @@ bbr="openvz版bbr-plus"
 else
 bbr="暂不支持显示"
 fi
-v46=`api64.ipify.org -k`
+v46=`curl -s api64.ipify.org -k`
 if [[ $v46 =~ '.' ]]; then
 ip="$v46（IPV4优先）" 
 else
