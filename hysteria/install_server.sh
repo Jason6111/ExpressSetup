@@ -214,7 +214,7 @@ get_version() {
 }
 
 download_hysteria() {
-  DOWNLOAD_LINK="https://github.com/apernet/hysteria/releases/download/$RELEASE_VERSION/hysteria-linux-$MACHINE"
+  DOWNLOAD_LINK="https://github.com/apernet/hysteria/releases/download/v1.3.1/hysteria-linux-$MACHINE"
   echo "Downloading Hysteria archive: $DOWNLOAD_LINK"
   if ! curl -x "${PROXY}" -R -H 'Cache-Control: no-cache' -o "$BIN_FILE" "$DOWNLOAD_LINK"; then
     echo 'error: Download failed! Please check your network or try again.'
