@@ -115,8 +115,11 @@ if [[ ! $wgcfv4 =~ on|plus && ! $wgcfv6 =~ on|plus ]]; then
 sureipadress
 else
 systemctl stop wg-quick@wgcf >/dev/null 2>&1
+kill -15 $(pgrep warp-go) >/dev/null 2>&1 && sleep 2
 sureipadress
 systemctl start wg-quick@wgcf >/dev/null 2>&1
+systemctl restart warp-go >/dev/null 2>&1
+systemctl enable warp-go >/dev/null 2>&1
 fi
 }
 
