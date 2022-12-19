@@ -521,6 +521,7 @@ green "naiveproxy内核版本升级成功" && na
 unins(){
 systemctl stop caddy >/dev/null 2>&1
 systemctl disable caddy >/dev/null 2>&1
+sed -i '/systemctl restart caddy/d' /etc/crontab
 rm -f /etc/systemd/system/caddy.service
 rm -rf /usr/bin/caddy /etc/caddy /root/naive /root/naiveproxy.sh /usr/bin/na
 green "naiveproxy卸载完成！"
@@ -560,6 +561,8 @@ rm -rf /usr/bin/caddy /etc/caddy /root/naive /usr/bin/na
 inscaddynaive ; inscertificate ; insport ; insuser ; inspswd ; insweb ; insconfig
 if [[ -n $(systemctl status caddy 2>/dev/null | grep -w active) && -f '/etc/caddy/Caddyfile' ]]; then
 green "naiveproxy服务启动成功"
+sed -i '/systemctl restart caddy/d' /etc/crontab
+echo "0 4 * * * systemctl restart caddy >/dev/null 2>&1" >> /etc/crontab
 chmod +x /root/naiveproxy.sh 
 ln -sf /root/naiveproxy.sh /usr/bin/na
 cp -f /etc/caddy/Caddyfile /etc/caddy/reCaddyfile >/dev/null 2>&1
