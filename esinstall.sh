@@ -224,6 +224,18 @@ red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" &&
 fi
 }
 
+OCPU() {
+cd /root && wget -qO OneKeyFuck_OCPU.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/OneKeyFuck_OCPU.sh && chmod +x OneKeyFuck_OCPU.sh && bash OneKeyFuck_OCPU.sh
+}
+
+Omemory() {
+cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume 2G
+}
+
+ONetWork() {
+cd /root && wget -qO FuckNetWork.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/FuckNetWork.sh && chmod +x FuckNetWork.sh && nohup ./FuckNetWork.sh &
+}
+
 zhuanfa() {
 echo "=============================================================="
 echo "选择机器"
@@ -259,6 +271,9 @@ green " 14.宝塔国际版"
 green " 15.关闭VPS防火墙、开放端口规则"
 green " 16.VPS一键root脚本、更改root密码"
 green " 17.更改VPS本地IP优先级"
+green " 18.Oracle消耗cpu"
+green " 19.Oracle消耗内存"
+green " 20.Oracle消耗流量"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -296,6 +311,9 @@ case "$Input" in
  15 ) opport;;
  16 ) root;;
  17 ) v4v6;;
+ 18 ) OCPU;;
+ 19 ) Omemory;;
+ 20 ) ONetWork;;
  * ) exit 
 esac
 }
