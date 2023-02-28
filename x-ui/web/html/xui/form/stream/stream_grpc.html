@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:95e4881a0bd8c4bb0664da9440dd0ea33a702ebd7cb8ebfeaf1a57950bec6dde
-size 209
+{{define "form/streamGRPC"}}
+<a-form layout="inline">
+    <a-form-item label="serviceName">
+        <a-input v-model.trim="inbound.stream.grpc.serviceName"></a-input>
+    </a-form-item>
+</a-form>
+{{end}}

@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:392b78da0fcb2bcb1cfa22bae302e5f53bcb3e92f3ba8ae52a0e3b58a6f19478
-size 414
+{{define "form/streamHTTP"}}
+<a-form layout="inline">
+    <a-form-item label="路径">
+        <a-input v-model.trim="inbound.stream.http.path"></a-input>
+    </a-form-item>
+    <a-form-item label="host">
+        <a-row v-for="(host, index) in inbound.stream.http.host">
+            <a-input v-model.trim="inbound.stream.http.host[index]"></a-input>
+        </a-row>
+    </a-form-item>
+</a-form>
+{{end}}

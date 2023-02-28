@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:1cb106ab83f89b22edc3182ad02510f4ebff49bbe6bd973a4201013543e6186f
-size 335
+{{define "form/http"}}
+<a-form layout="inline">
+    <a-form-item label="用户名">
+        <a-input v-model.trim="inbound.settings.accounts[0].user"></a-input>
+    </a-form-item>
+    <a-form-item label="密码">
+        <a-input v-model.trim="inbound.settings.accounts[0].pass"></a-input>
+    </a-form-item>
+</a-form>
+{{end}}

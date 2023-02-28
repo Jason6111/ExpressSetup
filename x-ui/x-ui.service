@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:d1ba27185af5c070cdc165527a88562b55103ceafcd783495443fc928ec60bcd
-size 210
+[Unit]
+Description=x-ui Service
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/usr/local/x-ui/
+ExecStart=/usr/local/x-ui/x-ui
+
+[Install]
+WantedBy=multi-user.target
