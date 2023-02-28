@@ -270,6 +270,7 @@ if tuned-adm active | grep -q "Current active profile: throughput-performance"; 
 else
     red "优化失败"
 fi
+}
 
 start_menu(){
 clear
