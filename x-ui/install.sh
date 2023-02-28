@@ -12,6 +12,7 @@ blue(){ echo -e "\033[36m\033[01m$1\033[0m";}
 white(){ echo -e "\033[37m\033[01m$1\033[0m";}
 readp(){ read -p "$(yellow "$1")" $2;}
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/x-ui/install.sh | sed  -n 2p | cut -d '"' -f 2`
+cur_dir=$(pwd)
 
 # check root
 [[ $EUID -ne 0 ]] && echo -e "${red}错误：${plain} 必须使用root用户运行此脚本！\n" && exit 1
@@ -214,7 +215,7 @@ install_x-ui() {
     cd x-ui
     chmod +x x-ui bin/xray-linux-${arch}
     cp -f x-ui.service /etc/systemd/system/
-    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/x-ui/install.sh
+    wget --no-check-certificate -O /usr/bin/x-ui https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/x-ui/x-ui.sh
     chmod +x /usr/bin/x-ui
     chmod +x /usr/local/x-ui/x-ui.sh
     systemctl daemon-reload
