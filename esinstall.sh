@@ -255,13 +255,17 @@ apt update -y  && apt upgrade -y && apt-get install -y tuned
 sudo systemctl start tuned.service
 sudo systemctl enable tuned.service
 green "选择如下:"
-readp "1. 使用标准模式（回车默认）\n2. 使用低配置下网络优化模式\n请选择：" certacme
+readp "1. 使用标准模式（回车默认）\n2. 使用低配置下网络优化模式\n3. 停止网络优化模式\n4. 卸载网络优化模式\n请选择：" certacme
 if [ -z "${TunedN}" ] || [ $TunedN == "1" ]; then
     tuned-adm profile balanced
     tuned-adm profile throughput-performance
 elif [ $TunedN == "2" ]; then
     tuned-adm profile virtual-guest
     tuned-adm profile network-throughput
+elif [ $TunedN == "3" ]; then
+	  sudo systemctl stop tuned.service
+elif [ $TunedN == "4" ]; then
+	  sudo apt-get remove tuned
 fi
 tuned-adm active
 
