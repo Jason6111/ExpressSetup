@@ -1,5 +1,5 @@
 #!/bin/bash
-esV="22.12.9 V1.0"
+esV="23.2.28 V1.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -29,7 +29,7 @@ elif cat /proc/version | grep -q -E -i "ubuntu"; then
 release="Ubuntu"
 elif cat /proc/version | grep -q -E -i "centos|red hat|redhat"; then
 release="Centos"
-else 
+else
 red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit 1
 fi
 
@@ -56,7 +56,7 @@ bbr="暂不支持显示"
 fi
 v46=`curl -s api64.ipify.org -k`
 if [[ $v46 =~ '.' ]]; then
-ip="$v46（IPV4优先）" 
+ip="$v46（IPV4优先）"
 else
 ip="$v46（IPV6优先）"
 fi
@@ -113,7 +113,7 @@ back
 
 gengxin(){
 wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh
-chmod +x /root/esinstall.sh 
+chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
 green "快速安装脚本升级成功" && es
 }
@@ -123,7 +123,7 @@ v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 ab="1.设置IPV4优先\n2.设置IPV6优先\n3.恢复系统默认优先\n0.返回上一层\n 请选择："
 readp "$ab" cd
-case "$cd" in 
+case "$cd" in
 1 )
 [[ -e /etc/gai.conf ]] && grep -qE '^ *precedence ::ffff:0:0/96  100' /etc/gai.conf || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
 sed -i '/^label 2002::\/16   2/d' /etc/gai.conf
@@ -141,7 +141,7 @@ sed -i '/^precedence ::ffff:0:0\/96  100/d;/^label 2002::\/16   2/d' /etc/gai.co
 v46=`curl -s api64.ipify.org -k`
 [[ $v46 =~ '.' ]] && green "当前VPS本地为IPV4优先：$v46" || green "当前VPS本地为IPV6优先：$v46"
 back;;
-0 ) 
+0 )
 bash <(curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh)
 esac
 }
@@ -219,7 +219,7 @@ elif cat /etc/issue | grep -q -E -i "debian"; then
 wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh && bash install.sh aapanel
 elif cat /etc/issue | grep -q -E -i "centos|red hat|redhat"; then
 yum install -y wget && wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh && bash install.sh aapanel
-else 
+else
 red "不支持你当前系统，请选择使用Ubuntu,Debian,Centos系统。" && exit 1
 fi
 }
@@ -244,17 +244,37 @@ echo "2.国内机"
 echo "=============================================================="
 	read -r -p "请选择:" installzhuanfa
 	if [[ "${installzhuanfa}" == "1" ]]; then
-		wget --no-check-certificate -qO natcfg.sh https://raw.githubusercontent.com/arloor/iptablesUtils/master/natcfg.sh && bash natcfg.sh 
+		wget --no-check-certificate -qO natcfg.sh https://raw.githubusercontent.com/arloor/iptablesUtils/master/natcfg.sh && bash natcfg.sh
 	else
 		wget --no-check-certificate -qO natcfg.sh http://www.arloor.com/sh/iptablesUtils/natcfg.sh && bash natcfg.sh
 	fi
 }
 
+Tuned() {
+apt update -y  && apt upgrade -y && apt-get install -y tuned
+sudo systemctl start tuned.service
+sudo systemctl enable tuned.service
+green "选择如下:"
+readp "1. 使用标准模式（回车默认）\n2. 使用低配置下网络优化模式\n请选择：" certacme
+if [ -z "${TunedN}" ] || [ $TunedN == "1" ]; then
+    tuned-adm profile balanced
+    tuned-adm profile throughput-performance
+elif [ $TunedN == "2" ]; then
+    tuned-adm profile virtual-guest
+    tuned-adm profile network-throughput
+fi
+tuned-adm active
+
+if tuned-adm active | grep -q "Current active profile: throughput-performance"; then
+    green "优化完成"
+else
+    red "优化失败"
+fi
 
 start_menu(){
 clear
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-green " 1.更新脚本" 
+green " 1.更新脚本"
 green " 2.hysteria"
 green " 3.naiveproxy"
 green " 4.tuic"
@@ -274,6 +294,7 @@ green " 17.更改VPS本地IP优先级"
 green " 18.Oracle消耗cpu"
 green " 19.Oracle消耗内存"
 green " 20.Oracle消耗流量"
+green " 21.Tuned linux自动系统优化工具"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -285,15 +306,15 @@ fi
 white " 再次进入输入 es"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 white " VPS系统信息如下："
-white " 操作系统      : $(blue "$op")" 
-white " 内核版本      : $(blue "$version")" 
-white " CPU架构       : $(blue "$cpu")" 
-white " 虚拟化类型    : $(blue "$vi")" 
-white " TCP加速算法   : $(blue "$bbr")" 
-white " 本地IP优先级  : $(blue "$ip")"       
+white " 操作系统      : $(blue "$op")"
+white " 内核版本      : $(blue "$version")"
+white " CPU架构       : $(blue "$cpu")"
+white " 虚拟化类型    : $(blue "$vi")"
+white " TCP加速算法   : $(blue "$bbr")"
+white " 本地IP优先级  : $(blue "$ip")"
 echo
 readp "请输入数字:" Input
-case "$Input" in  
+case "$Input" in
  1 ) gengxin;;
  2 ) hysteria;;
  3 ) naiveproxy;;
@@ -301,7 +322,7 @@ case "$Input" in
  5 ) nginx;;
  6 ) acme;;
  7 ) x-ui;;
- 8 ) x-uimogai;; 
+ 8 ) x-uimogai;;
  9 ) zhuanfa;;
  10 ) bbrInstall;;
  11 ) xrayInstall;;
@@ -314,7 +335,8 @@ case "$Input" in
  18 ) OCPU;;
  19 ) Omemory;;
  20 ) ONetWork;;
- * ) exit 
+ 21 ) Tuned;;
+ * ) exit
 esac
 }
 if [ $# == 0 ]; then
