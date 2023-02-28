@@ -371,12 +371,12 @@ migrate_v2_ui() {
 
 acme() {
    wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && chmod +x acme.sh && ./acme.sh
-   echo ""
-   before_show_menu
+    echo ""
+    before_show_menu
 }
 
 bbr() {
-    wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+  wget -N --no-check-certificate "https://raw.githubusercontent.com/ylx2016/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
 }
 
 cfwarp() {
