@@ -1,25 +1,3 @@
-package job
-
-import "x-ui/web/service"
-
-type CheckXrayRunningJob struct {
-	xrayService service.XrayService
-
-	checkTime int
-}
-
-func NewCheckXrayRunningJob() *CheckXrayRunningJob {
-	return new(CheckXrayRunningJob)
-}
-
-func (j *CheckXrayRunningJob) Run() {
-	if j.xrayService.IsXrayRunning() {
-		j.checkTime = 0
-		return
-	}
-	j.checkTime++
-	if j.checkTime < 2 {
-		return
-	}
-	j.xrayService.SetToNeedRestart()
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:a767676c3c670f9d8d7892a89d99a207b1bf6e640620bc12dfea48405ff89a1e
+size 429

@@ -1,30 +1,3 @@
-package job
-
-import (
-	"x-ui/logger"
-	"x-ui/web/service"
-)
-
-type XrayTrafficJob struct {
-	xrayService    service.XrayService
-	inboundService service.InboundService
-}
-
-func NewXrayTrafficJob() *XrayTrafficJob {
-	return new(XrayTrafficJob)
-}
-
-func (j *XrayTrafficJob) Run() {
-	if !j.xrayService.IsXrayRunning() {
-		return
-	}
-	traffics, err := j.xrayService.GetXrayTraffic()
-	if err != nil {
-		logger.Warning("get xray traffic failed:", err)
-		return
-	}
-	err = j.inboundService.AddTraffic(traffics)
-	if err != nil {
-		logger.Warning("add traffic failed:", err)
-	}
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:329e21fe1648ae7e5ec4c43d9f8e1b6ecb0f771fa51a6e8f2ce677773d2930a9
+size 593

@@ -1,12 +1,3 @@
-"username" = "用户名"
-"password" = "密码"
-"login" = "登录"
-"confirm" = "确定"
-"cancel" = "取消"
-"close" = "关闭"
-"copy" = "复制"
-"copied" = "已复制"
-"download" = "下载"
-"remark" = "备注"
-"enable" = "启用"
-"protocol" = "协议"
+version https://git-lfs.github.com/spec/v1
+oid sha256:71c92d0755f04287983fd35d39b058c93d793a99b623c89f0429e7c1422f57c0
+size 261

@@ -1,12 +1,3 @@
-"username" = "username"
-"password" = "password"
-"login" = "login"
-"confirm" = "confirm"
-"cancel" = "cancel"
-"close" = "close"
-"copy" = "copy"
-"copied" = "copied"
-"download" = "download"
-"remark" = "remark"
-"enable" = "enable"
-"protocol" = "protocol"
+version https://git-lfs.github.com/spec/v1
+oid sha256:4c33a2855554dd5dc0dc8d2a9caaa393dd35a63acf73d4e517970e6c6023527a
+size 260
