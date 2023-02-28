@@ -90,7 +90,7 @@ bash <(curl -L -s https://github.com/Jason6111/ExpressSetup/raw/main/acme.sh)
 }
 
 x-ui(){
-bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/x-ui/install.sh && bash install.sh
 }
 
 x-uimogai() {
