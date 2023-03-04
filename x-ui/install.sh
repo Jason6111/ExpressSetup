@@ -288,6 +288,7 @@ fi
 /usr/local/x-ui/x-ui setting -port $port >/dev/null 2>&1
 green "x-ui登录端口：${port}"
 sleep 1
+x-ui restart
 xuilogin(){
 v4=$(curl -s4m6 ip.sb -k)
 v6=$(curl -s6m6 ip.sb -k)
