@@ -229,7 +229,7 @@ cd /root && wget -qO OneKeyFuck_OCPU.sh https://raw.githubusercontent.com/Jason6
 }
 
 Omemory() {
-cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume 2G
+cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume 100MB
 }
 
 ONetWork() {
