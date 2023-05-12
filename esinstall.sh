@@ -93,6 +93,10 @@ x-ui(){
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 }
 
+x-uireality(){
+bash <(curl -Ls https://raw.githubusercontent.com/FranzKafkaYu/x-ui/master/install.sh)
+}
+
 x-uimogai() {
 bash <(curl -Ls https://raw.githubusercontent.com/vaxilu/x-ui/master/install.sh)
 rm -f /usr/local/x-ui/bin/xray-linux-amd64
@@ -286,20 +290,21 @@ green " 4.tuic"
 green " 5.安装nginx有宝塔的不用安装"
 green " 6.ssl证书(请先确保端口打开)"
 green " 7.安装x-ui"
-green " 8.安装x-ui并替换文件"
-green " 9.转发救机"
-green " 10.安装bbr"
-green " 11.一键Xray"
-green " 12.安装哪吒探针"
-green " 13.电报代理"
-green " 14.宝塔国际版"
-green " 15.关闭VPS防火墙、开放端口规则"
-green " 16.VPS一键root脚本、更改root密码"
-green " 17.更改VPS本地IP优先级"
-green " 18.Oracle消耗cpu"
-green " 19.Oracle消耗内存"
-green " 20.Oracle消耗流量"
-green " 21.Tuned linux自动系统优化工具"
+green " 8.安装x-ui支持reality协议"
+green " 9.安装x-ui并替换文件"
+green " 10.转发救机"
+green " 11.安装bbr"
+green " 12.一键Xray"
+green " 13.安装哪吒探针"
+green " 14.电报代理"
+green " 15.宝塔国际版"
+green " 16.关闭VPS防火墙、开放端口规则"
+green " 17.VPS一键root脚本、更改root密码"
+green " 18.更改VPS本地IP优先级"
+green " 19.Oracle消耗cpu"
+green " 20.Oracle消耗内存"
+green " 21.Oracle消耗流量"
+green " 22.Tuned linux自动系统优化工具"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -327,20 +332,21 @@ case "$Input" in
  5 ) nginx;;
  6 ) acme;;
  7 ) x-ui;;
- 8 ) x-uimogai;;
- 9 ) zhuanfa;;
- 10 ) bbrInstall;;
- 11 ) xrayInstall;;
- 12 ) nezhamianban;;
- 13 ) TGInstall;;
- 14 ) BT;;
- 15 ) opport;;
- 16 ) root;;
- 17 ) v4v6;;
- 18 ) OCPU;;
- 19 ) Omemory;;
- 20 ) ONetWork;;
- 21 ) Tuned;;
+ 8 ) x-uireality;;
+ 9 ) x-uimogai;;
+ 10 ) zhuanfa;;
+ 11 ) bbrInstall;;
+ 12 ) xrayInstall;;
+ 13 ) nezhamianban;;
+ 14 ) TGInstall;;
+ 15 ) BT;;
+ 16 ) opport;;
+ 17 ) root;;
+ 18 ) v4v6;;
+ 19 ) OCPU;;
+ 20 ) Omemory;;
+ 21 ) ONetWork;;
+ 22 ) Tuned;;
  * ) exit
 esac
 }
