@@ -63,10 +63,10 @@ if [ $(echo "$used_percent < 10" | bc) -eq 1 ]; then
     FullM="${mem_diff}M"
         if [ -f /root/memory_usage.sh ]; then
              echo "file found...开始执行 吃掉内存"
-                cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Mrmineduce21/Oracle_OneKey_Active/main/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume ${FullM}
+                cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume ${FullM}
         else
                 echo "no such file!-开始下载"
-                cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Mrmineduce21/Oracle_OneKey_Active/main/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume ${FullM}
+                cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume ${FullM}
         fi
 else
     echo -e "${green}内存占用达到15%${plain}"
