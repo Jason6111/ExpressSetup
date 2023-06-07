@@ -47,7 +47,7 @@ sleep 5
   else
 
   echo "no such file!-开始下载"
-cd /root && wget -qO Fuck_OCPU.sh https://raw.githubusercontent.com/Mrmineduce21/Oracle_OneKey_Active/main/Fuck_OCPU.sh && chmod +X Fuck_OCPU.sh && bash Fuck_OCPU.sh ${Cores}
+cd /root && wget -qO Fuck_OCPU.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/Fuck_OCPU.sh && chmod +X Fuck_OCPU.sh && bash Fuck_OCPU.sh ${Cores}
   
 fi
 
