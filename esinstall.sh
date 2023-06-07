@@ -1,5 +1,5 @@
 #!/bin/bash
-esV="23.3.4 V1.0"
+esV="23.3.4 V2.0"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -233,7 +233,7 @@ cd /root && wget -qO OneKeyFuck_OCPU.sh https://raw.githubusercontent.com/Jason6
 }
 
 Omemory() {
-cd /root && wget -qO memory_usage.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/memory_usage.sh && chmod +x memory_usage.sh && bash memory_usage.sh consume 100MB
+cd /root && wget -qO OneKey_FuckMemory.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/OracleActive/OneKey_FuckMemory.sh && chmod +x OneKey_FuckMemory.sh && bash OneKey_FuckMemory.sh
 }
 
 ONetWork() {
@@ -303,8 +303,7 @@ green " 17.VPS一键root脚本、更改root密码"
 green " 18.更改VPS本地IP优先级"
 green " 19.Oracle消耗cpu"
 green " 20.Oracle消耗内存"
-green " 21.Oracle消耗流量"
-green " 22.Tuned linux自动系统优化工具"
+green " 21.Tuned linux自动系统优化工具"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -345,8 +344,7 @@ case "$Input" in
  18 ) v4v6;;
  19 ) OCPU;;
  20 ) Omemory;;
- 21 ) ONetWork;;
- 22 ) Tuned;;
+ 21 ) Tuned;;
  * ) exit
 esac
 }
