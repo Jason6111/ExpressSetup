@@ -1,5 +1,5 @@
 #!/bin/bash
-esV="23.3.4 V2.1"
+esV="23.3.4 V2.2"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
