@@ -262,9 +262,9 @@ echo "2.去除手机验证"
 echo "=============================================================="
 	read -r -p "请选择:" installbaota
 	if [[ "${installbaota}" == "1" ]]; then
-		curl -sSO https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/install_panel.sh && bash install_panel.sh
+		curl -sSO https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/btpanel-v7.7.0/install/install_panel.sh && bash install_panel.sh
 	elif [[ "${installbaota}" == "2" ]]; then
-		wget -O optimize.sh http://f.cccyun.cc/bt/optimize.sh && bash optimize.sh
+		wget -O optimize.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/btpanel-v7.7.0/optimize.sh && bash optimize.sh
 	fi
 }
 Tuned() {
