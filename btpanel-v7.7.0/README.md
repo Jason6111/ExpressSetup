@@ -11,7 +11,7 @@ curl -sSO https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/btpanel-
 # 手动破解：
 # 一键优化脚本
 ```
-wget -O optimize.sh http://f.cccyun.cc/bt/optimize.sh && bash optimize.sh
+wget -O optimize.sh https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/btpanel-v7.7.0/optimize.sh && bash optimize.sh
 ```  
 
 1，屏蔽手机号
