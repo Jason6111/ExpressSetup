@@ -254,6 +254,19 @@ echo "=============================================================="
 	fi
 }
 
+baota() {
+echo "=============================================================="
+echo "选择机器"
+echo "1.安装"
+echo "2.去除手机验证"
+echo "=============================================================="
+	read -r -p "请选择:" installbaota
+	if [[ "${installbaota}" == "1" ]]; then
+		curl -sSO https://raw.githubusercontent.com/8838/btpanel-v7.7.0/main/install/install_panel.sh && bash install_panel.sh
+	elif [[ "${installbaota}" == "2" ]]; then
+		wget -O optimize.sh http://f.cccyun.cc/bt/optimize.sh && bash optimize.sh
+	fi
+}
 Tuned() {
 apt update -y  && apt upgrade -y && apt-get install -y tuned
 sudo systemctl start tuned.service
@@ -298,12 +311,13 @@ green " 12.一键Xray"
 green " 13.安装哪吒探针"
 green " 14.电报代理"
 green " 15.宝塔国际版"
-green " 16.关闭VPS防火墙、开放端口规则"
-green " 17.VPS一键root脚本、更改root密码"
-green " 18.更改VPS本地IP优先级"
-green " 19.Oracle消耗cpu"
-green " 20.Oracle消耗内存"
-green " 21.Tuned linux自动系统优化工具"
+green " 16.宝塔国际版"
+green " 17.关闭VPS防火墙、开放端口规则"
+green " 18.VPS一键root脚本、更改root密码"
+green " 19.更改VPS本地IP优先级"
+green " 20.Oracle消耗cpu"
+green " 21.Oracle消耗内存"
+green " 22.Tuned linux自动系统优化工具"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -339,12 +353,13 @@ case "$Input" in
  13 ) nezhamianban;;
  14 ) TGInstall;;
  15 ) BT;;
- 16 ) opport;;
- 17 ) root;;
- 18 ) v4v6;;
- 19 ) OCPU;;
- 20 ) Omemory;;
- 21 ) Tuned;;
+ 16 ) baota;;
+ 17 ) opport;;
+ 18 ) root;;
+ 19 ) v4v6;;
+ 20 ) OCPU;;
+ 21 ) Omemory;;
+ 22 ) Tuned;;
  * ) exit
 esac
 }
