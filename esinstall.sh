@@ -77,6 +77,10 @@ systemctl start wg-quick@wgcf >/dev/null 2>&1
 fi
 }
 
+cfwarpreg(){
+curl -sSL https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/WARP-Wireguard-Register/acwarp.sh -o acwarp.sh && chmod +x acwarp.sh && ./acwarp.sh
+}
+
 nginx(){
 yum update -y || apt update -y
 yum install nginx curl wget -y || apt install nginx curl wget -y
@@ -318,6 +322,7 @@ green " 19.更改VPS本地IP优先级"
 green " 20.Oracle消耗cpu"
 green " 21.Oracle消耗内存"
 green " 22.Tuned linux自动系统优化工具"
+green " 23.warp注册工具"
 green " 0. 退出脚本"
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 if [ "${esV}" = "${remoteV}" ]; then
@@ -360,6 +365,7 @@ case "$Input" in
  20 ) OCPU;;
  21 ) Omemory;;
  22 ) Tuned;;
+ 23 ) cfwarpreg;;
  * ) exit
 esac
 }
