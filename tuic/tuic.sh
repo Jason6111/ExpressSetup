@@ -226,6 +226,15 @@ fi
 fi
 }
 
+susstuic(){
+systemctl restart tuic
+if [[ -n $(systemctl status tuic 2>/dev/null | grep -w active) && -f '/etc/tuic/tuic.json' ]]; then
+green "tuic服务启动成功" && tuicshare
+else
+red "tuic服务启动失败，请运行systemctl status tuic查看服务状态并反馈，脚本退出" && exit
+fi
+}
+
 changeuuid(){
     olduuid=$(cat /etc/tuic/tuic.json 2>/dev/null | sed -n 4p | awk '{print $1}' | tr -d ':"')
     read -p "设置 tuic UUID（回车跳过为随机 UUID）：" uuid
