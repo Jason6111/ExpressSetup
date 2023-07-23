@@ -157,13 +157,15 @@ elif [ $choose == "3" ];then
 changeuuid
 elif [ $choose == "4" ];then
 inscertificate
-oldcer=`cat /etc/tuic/tuic.json 2>/dev/null | sed -n 4p | awk '{print $2}' | tr -d ',"'`
-oldkey=`cat /etc/tuic/tuic.json 2>/dev/null | sed -n 5p | awk '{print $2}' | tr -d ',"'`
+oldcer=`cat /etc/tuic/tuic.json 2>/dev/null | sed -n 6p | awk '{print $2}' | tr -d ',"'`
+oldkey=`cat /etc/tuic/tuic.json 2>/dev/null | sed -n 7p | awk '{print $2}' | tr -d ',"'`
 sed -i "s#$oldcer#${cert_path}#g" /etc/tuic/tuic.json
 sed -i "s#$oldkey#${key_path}#g" /etc/tuic/tuic.json
 olddomain=`cat /root/tuic/v2rayn.json 2>/dev/null | sed -n 3p | awk '{print $2}' | tr -d ',"'`
+sed -i "s/$olddomain/${domain}/g" /etc/tuic/tuic.json
 sed -i "s/$olddomain/${domain}/g" /root/tuic/v2rayn.json
-sed -i "3s/$olddomain/${domain}/g" /root/tuic/tuic.txt
+sed -i "s/$olddomain/${domain}/g" /root/tuic/tuic.txt
+sed -i "s/$olddomain/${domain}/g" /root/tuic/clash-meta.yaml
 susstuic
 elif [ $choose == "5" ];then
 tu
