@@ -1,5 +1,5 @@
 #!/bin/bash
-tuV="23.7.23 V 2.0"
+tuV="23.7.23 V 2.1"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/tuic/tuic.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/tuic.sh
 ln -sf /root/tuic.sh /usr/bin/tu
@@ -169,6 +169,58 @@ elif [ $choose == "5" ];then
 tu
 else
 red "请重新选择" && changeserv
+fi
+}
+
+inscertificate(){
+green "Tuic 协议证书申请方式如下："
+    echo ""
+    echo -e " ${GREEN}1.${PLAIN} 脚本自动申请 ${YELLOW}（默认）${PLAIN}"
+    echo -e " ${GREEN}2.${PLAIN} 自定义证书路径"
+    echo ""
+    read -rp "请输入选项 [1-2]: " certInput
+    if [[ $certInput == 2 ]]; then
+        read -p "请输入公钥文件 crt 的路径：" cert_path
+        yellow "公钥文件 crt 的路径：$cert_path "
+        read -p "请输入密钥文件 key 的路径：" key_path
+        yellow "密钥文件 key 的路径：$key_path "
+        read -p "请输入证书的域名：" domain
+        yellow "证书域名：$domain"
+    else
+        cert_path="/root/ca/cert.crt"
+        key_path="/root/ca/private.key"
+        if [[ -f /root/ca/cert.crt && -f /root/ca/private.key ]] && [[ -s /root/ca/cert.crt && -s /root/ca/private.key ]] && [[ -f /root/ca/ca.log ]]; then
+            domain=$(cat /root/ca/ca.log)
+            green "检测到原有域名：$domain 的证书，正在应用"
+        else
+            if [[ -f /root/ca/cert.crt && -f /root/ca/private.key ]] && [[ -s /root/ca/cert.crt && -s /root/ca/private.key ]] && [[ -f /root/ca/ca.log ]]; then
+blue "经检测，之前已使用此acme脚本申请过证书"
+readp "1. 直接使用原来的证书（回车默认）\n2. 删除原来的证书，重新申请证书\n请选择：" certacme
+if [ -z "${certacme}" ] || [ $certacme == "1" ];
+then domain=$(cat /root/ca/ca.log)
+blue "检测到的域名：$domain ，已直接引用\n"
+elif [ $certacme == "2" ]; then
+curl https://get.acme.sh | sh
+bash /root/.acme.sh/acme.sh --uninstall
+rm -rf /root/ca
+rm -rf ~/.acme.sh acme.sh
+sed -i '/--cron/d' /etc/crontab
+[[ -z $(/root/.acme.sh/acme.sh -v 2>/dev/null) ]] && green "acme.sh卸载完毕" || red "acme.sh卸载失败"
+sleep 2
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
+domain=$(cat /root/ca/ca.log)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/yca/cert.crt && ! -s /root/ca/private.key ]]; then
+red "证书申请失败，脚本退出" && exit
+fi
+fi
+else
+wget -N https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/acme.sh && bash acme.sh
+domain=$(cat /root/ca/ca.log)
+if [[ ! -f /root/ca/cert.crt && ! -f /root/ca/private.key ]] && [[ ! -s /root/ca/cert.crt && ! -s /root/ca/private.key ]]; then
+red "证书申请失败，脚本退出" && exit
+fi
+fi
+fi
 fi
 }
 
@@ -501,7 +553,7 @@ red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 green "  1. 安装tuic（必选）"
 green "  2. 卸载tuic"
 white "----------------------------------------------------------------------------------"
-green "  3. 变更配置（端口、令牌码Token、证书）"
+green "  3. 变更配置（端口、密码、UUID、证书）"
 green "  4. 关闭、开启、重启tuic"
 green "  5. 更新tuic安装脚本"
 green "  6. 更新tuic内核版本"
