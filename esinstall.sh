@@ -1,5 +1,5 @@
 #!/bin/bash
-esV="23.3.4 V2.2"
+esV="23.3.4 V2.3"
 remoteV=`wget -qO- https://raw.githubusercontent.com/Jason6111/ExpressSetup/main/esinstall.sh | sed  -n 2p | cut -d '"' -f 2`
 chmod +x /root/esinstall.sh
 ln -sf /root/esinstall.sh /usr/bin/es
@@ -301,7 +301,7 @@ start_menu(){
 clear
 red "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 green " 1.更新脚本"
-green " 2.hysteria"
+green " 2.hysteria 2"
 green " 3.naiveproxy"
 green " 4.tuic"
 green " 5.安装nginx有宝塔的不用安装"
